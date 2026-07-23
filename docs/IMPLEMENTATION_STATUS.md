@@ -11,6 +11,24 @@ Updated: 2026-07-23
 
 ## Delivered checkpoint
 
+### Purple Universe P0 repository baseline and visual audit
+
+- The complete validated 162-file application was committed as the repository
+  baseline on `main` at
+  `bc7cc51e6772f6a41ab40858e3742057c5218709` and pushed to
+  `https://github.com/gmanisandeep/Campus-Connect.git`.
+- The isolated `codex/purple-universe` branch was created from that exact SHA
+  and pushed before any redesign work.
+- The current code-evidenced screen audit, Purple Universe token/component
+  contract, motion contract, and measurable visual performance/accessibility
+  budget are recorded in `PREMIUM_UI_AUDIT.md`,
+  `PURPLE_UNIVERSE_DESIGN_SYSTEM.md`, `MOTION_SYSTEM.md`, and
+  `VISUAL_PERFORMANCE_BUDGET.md`. Repository-wide safeguards are persisted in
+  `AGENTS.md`.
+- This P0 checkpoint changes no production Flutter, Supabase, migration,
+  authorization, attendance, or encrypted-draft behavior. The first UI code
+  milestone begins with foundations and the development-only gallery.
+
 ### Phase 0 specification
 
 Product scope, role/permission matrix, architecture, data model, design system, security/privacy, offline/sync, testing, roadmap, decisions, and this evidence ledger are present and mutually scoped to a reconstruction.
@@ -87,7 +105,7 @@ repository exact-confirmation, and recovery-page widget coverage.
 | Current encrypted-draft local-device APK | Build/signature gate passed. `build/app/outputs/flutter-apk/CampusConnect-encrypted-offline-drafts-local-device-debug.apk` is 198,317,469 bytes with SHA-256 `348483207CE347B6ABEF10DF3E5DD2E5DEC6EF64F9932E3A7C04DCB89C74517E`. It uses package `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), min SDK 24/target SDK 36, and verifies with APK Signature Scheme v2 and one Android debug signer. It contains local loopback development configuration and is not a production release. Physical restart/offline/reconnect validation of this exact artifact is pending because ADB currently sees no device. |
 | iOS build/launch | Not run; this Windows host has no macOS/Xcode environment. |
 | `git diff --cached --check` | Passed against the final staged tree. |
-| Hosted CI | Workflow source exists but no GitHub Actions run is claimed. |
+| Hosted CI | Passed on the exact `main` baseline commit `bc7cc51e6772f6a41ab40858e3742057c5218709`: the Flutter job passed dependency resolution, format, analysis, all tests with coverage, release APK compilation, and credential-pattern scan; the database job passed Supabase start/reset, all 276 pgTAP assertions, schema lint, the 228-assertion real-backend verifier, and cleanup. GitHub Actions run `30008925152` completed successfully. |
 | Conventional Git commit | Blocked only by missing Git author identity; all deliverable files are staged on the feature branch. |
 
 ## Known limitations and blockers

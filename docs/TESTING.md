@@ -68,7 +68,12 @@ Fixtures and development seed data must be explicit, fictional, and deterministi
   blocks the cached Supabase CLI executable, so the unchanged schema's CLI lint
   and 228-assertion verifier retain their most recent passing evidence rather
   than being claimed as fresh reruns.
-- CI now contains the Flutter source/coverage/release-APK gates, a heuristic secret scan, and a Docker-backed Supabase reset, schema-lint, pgTAP, and local-backend verification job. No hosted workflow run is claimed.
+- Hosted GitHub Actions run `30008925152` passed on baseline commit
+  `bc7cc51e6772f6a41ab40858e3742057c5218709`. Its Flutter job passed
+  dependency resolution, format, analysis, all tests with coverage, release
+  APK compilation, and the heuristic secret scan. Its database job passed
+  Supabase start/reset, all 276 pgTAP assertions, schema lint, the
+  228-assertion real-backend verifier, and cleanup.
 - Local release-mode AOT compilation passes with `--no-tree-shake-icons`; Windows Application Control blocks Flutter's `font-subset.exe` in the default tree-shaken command. Linux CI retains the standard command. This is not release-readiness evidence because production signing and Dart defines are still absent.
 
 Docker Desktop 4.82.0, Docker CLI 29.6.1, WSL 2, and the Linux container engine are operational. Optional Supabase analytics is intentionally disabled; core services and localhost Auth health remain available. A host-scoped Windows Firewall rule blocks inbound TCP ports 54321-54329, but that machine-level protection is not enforced by the repository.
