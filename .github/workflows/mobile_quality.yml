@@ -1,0 +1,62 @@
+name: Quality gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test --coverage
+      - run: flutter build apk --release
+      - name: Reject obvious client secrets
+        shell: bash
+        run: |
+          set +e
+          credential_files="$(git grep -lEi '(SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=|sb_secret_[a-zA-Z0-9_-]{20,}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|eyJ[a-zA-Z0-9_-]{20,}\.[a-zA-Z0-9_-]{20,}\.)' -- ':!docs/**' ':!.github/**')"
+          grep_status=$?
+          set -e
+
+          if [ "$grep_status" -eq 0 ]; then
+            printf '%s\n' "$credential_files"
+            echo 'Potential privileged credential marker found.'
+            exit 1
+          fi
+
+          if [ "$grep_status" -ne 1 ]; then
+            echo "Credential scan failed with status $grep_status."
+            exit "$grep_status"
+          fi
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: supabase/setup-cli@ab058987d8d6c725971f6cf9d0b5c98467e30bd1 # v1.7.1
+        with:
+          version: 2.109.1
+      - run: supabase start
+      - run: supabase db reset --local
+      - run: supabase test db --local
+      - run: supabase db lint --local --schema public,private --level warning --fail-on error
+      - name: Verify local Auth, identity, RLS, and recovery contracts
+        shell: pwsh
+        run: ./tool/verify_local_backend.ps1 -SupabaseCli (Get-Command supabase).Source
+      - if: always()
+        run: supabase stop --no-backup
