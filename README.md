@@ -13,6 +13,10 @@ This repository contains the reviewed Phase 0 specification, a green Phase 1 Flu
   tokens, and shared Material component defaults. Ambient effects, glass and
   spectral components, gallery migration, and production-screen redesigns are
   later checkpoints.
+- A canonical Student/Faculty feature architecture and typed development-only
+  blueprint for Feed, Chat, Calendar, Attendance, Courses, Skills,
+  Internships, Jobs, and Part-time. Delivery states remain evidence-based, and
+  unfinished modules are not exposed as production navigation.
 - Supabase sign-in, password reset/recovery, crash-safe fail-closed session classification/restoration, profile completion, invitation acceptance, pending-invitation review, and server-derived institution/role selection. Recovery/OTP sessions are denied campus identity data by both the app and backend until a fresh password-authenticated session exists.
 - Fail-closed route and permission handling. Academics navigation is enabled only for a backend-configured active Student or Faculty grant; unfinished Campus, Career, Notifications, and the remaining academic/attendance surfaces are not exposed as dead production controls.
 - Server-derived institution-local today timetable, Student attendance summaries, Faculty assigned-class rosters, and atomic, idempotent attendance confirmation.
@@ -31,8 +35,8 @@ completed release. The preserved device-loopback and emulator-host APKs are
 local debug builds, not production releases, and predate the Purple Universe
 foundation. The prior academics APK passes Student and Faculty end-to-end
 validation on both the Android emulator and physical device. The consolidated
-source now passes formatting, zero-issue analysis, all 149 tests, and coverage
-at 59.11% raw or 68.86% excluding generated Drift code. Physical
+source now passes formatting, zero-issue analysis, all 157 tests, and coverage
+at 59.84% raw or 69.59% excluding generated Drift code. Physical
 persistence/offline/reconnect validation of the encrypted-draft APK, a new
 foundation APK device validation, physical recovery-callback, accessibility,
 performance, and iOS validation remain open, as do terms/privacy acknowledgement,

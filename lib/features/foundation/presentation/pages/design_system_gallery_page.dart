@@ -2,6 +2,7 @@ import 'package:campus_connect/core/theme/app_tokens.dart';
 import 'package:campus_connect/core/widgets/app_search_field.dart';
 import 'package:campus_connect/core/widgets/async_state_views.dart';
 import 'package:campus_connect/core/widgets/status_badge.dart';
+import 'package:campus_connect/features/foundation/presentation/widgets/feature_blueprint_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -59,6 +60,8 @@ class DesignSystemGalleryPage extends StatelessWidget {
           message: 'Upcoming classes and events will appear here.',
         ),
         const AppErrorState(message: 'Check your connection and try again.'),
+        const SizedBox(height: AppSpacing.xl),
+        const FeatureBlueprintSection(),
       ],
     ),
   );

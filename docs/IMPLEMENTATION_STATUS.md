@@ -52,6 +52,29 @@ Updated: 2026-07-23
   rendering, glass/spectral components, gallery migration, and production
   screen redesigns are not yet implemented.
 
+### Whiteboard-derived role feature architecture
+
+- `FEATURE_ARCHITECTURE.md` is now the canonical translation of the requested
+  Student and Faculty dashboard hierarchy into grouped product areas,
+  production exposure rules, secure MVP contracts, offline/unread behavior,
+  and ordered vertical slices.
+- Student Platform is defined as Career: Student-owned Skills plus one typed
+  Opportunities domain filtered into Internships, Jobs, and Part-time. Feed is
+  an official targeted information surface, and Chat starts as course-scoped
+  communication rather than unrestricted direct messaging.
+- The duplicate Faculty Dashboard label is resolved as one Faculty Home with a
+  Teaching Overview. Calendar is a projection over authoritative timetable,
+  event, and deadline sources rather than a second scheduling data store.
+- A typed `CampusFeatureCatalog` records the exact Student and Faculty trees
+  with `Available`, `Foundation`, and `Planned` evidence states. The
+  development-only gallery renders both trees responsively and clearly labels
+  them as a blueprint.
+- Production routing is intentionally unchanged. Unfinished Feed, Chat,
+  Calendar, Courses, Skills, and Opportunities destinations remain hidden
+  until their full vertical slice, institution enablement, and server grant
+  all pass. This checkpoint adds no backend tables, permissions, RLS policies,
+  RPCs, or production-looking fixture data.
+
 ### Phase 0 specification
 
 Product scope, role/permission matrix, architecture, data model, design system, security/privacy, offline/sync, testing, roadmap, decisions, and this evidence ledger are present and mutually scoped to a reconstruction.
@@ -104,9 +127,9 @@ recovery-page widget coverage.
 | Flutter/Dart toolchain | Flutter 3.44.6 stable; Dart 3.12.2, invoked from the downloaded toolchain because it is not on `PATH`. |
 | Android toolchain | Passed: Microsoft OpenJDK 17.0.19, Android Platforms 34/35/36, Build Tools 36.0.0, Platform Tools 37.0.0, NDK 28.2.13676358, and all SDK licenses are installed. Flutter Doctor recognizes the Android toolchain through persistent no-space junctions, and a fresh-daemon APK build passes after the temporary drive aliases are removed. |
 | `flutter pub get` | Passed; `pubspec.lock` generated and dependencies resolved. |
-| `dart format --output=none --set-exit-if-changed lib test` | Passed across all 79 Dart files; the verification rerun required zero further changes. |
+| `dart format --output=none --set-exit-if-changed lib test` | Passed across all 83 Dart files; the verification rerun required zero further changes. |
 | `flutter analyze` | Passed with zero issues. |
-| `flutter test --coverage` | Passed all 149 tests. Raw LCOV: 2,408/4,074 lines, 59.11%. Excluding generated Drift `.g.dart` code: 2,105/3,057 lines, 68.86%. |
+| `flutter test --coverage` | Passed all 157 tests. Raw LCOV: 2,482/4,148 lines, 59.84%. Excluding generated Drift `.g.dart` code: 2,179/3,131 lines, 69.59%. The eight new catalog/gallery tests include exact hierarchy, evidence-state, unsupported-role, narrow-phone, and 200% text-scale coverage. |
 | `flutter create . --platforms=android,ios ...` | Passed; platform scaffolding generated and auth callback configuration reviewed. |
 | YAML/TOML/XML/plist parse checks | Passed: 3 YAML files, 1 TOML file, and 12 Android/iOS XML/plist files. |
 | PostgreSQL-compatible migration/runtime smoke checks | Passed for all four migrations and the identity, onboarding, academic/timetable, and attendance behavior, including the targeted Unicode White_Space/common-invisible display-name cases. The real Supabase reset and pgTAP gates subsequently passed as well. |
@@ -127,17 +150,19 @@ recovery-page widget coverage.
 | Physical Android smoke flow | Passed with the prior academics device APK on a Samsung Galaxy A35 5G (`SM-A356E`), Android 16/API 36, at 1080x2340: secure wireless ADB pairing, APK installation, `tcp:54321` port reversal, cold launch, real seeded Student and Faculty sign-in, Student authenticated-session restoration after process force-stop, Student academics rendering, Faculty roster/status interaction, successful attendance confirmation, and cleanup. The physical recovery-callback and newer encrypted-draft artifact remain separate gates. |
 | Current verified academics/attendance Android slice | Passed on the local Android emulator with the backend-connected `CampusConnect-academics-local-device-debug.apk`: Student sign-in, server-derived campus date, both timetable entries, 66.7%/50.0% summaries, Faculty sign-in, exact two-student roster, status selection, and successful attendance confirmation. The same byte-identical APK passed Student and Faculty end-to-end checks on the Galaxy A35, including successful server-confirmed Faculty submission. The 183,751,296-byte APK uses package `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), min SDK 24/target SDK 36, verifies with APK Signature Scheme v2, and has SHA-256 `7EDF085CD1FD1C6981DE5896DEB454FED1660F1CA1D2F592583F6752DCA0D5AC`. It is the prior local debug artifact, not a release or validation of the newer encrypted-draft increment. |
 | Current encrypted-draft local-device APK | Build/signature gate passed. `build/app/outputs/flutter-apk/CampusConnect-encrypted-offline-drafts-local-device-debug.apk` is 198,317,469 bytes with SHA-256 `348483207CE347B6ABEF10DF3E5DD2E5DEC6EF64F9932E3A7C04DCB89C74517E`. It uses package `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), min SDK 24/target SDK 36, and verifies with APK Signature Scheme v2 and one Android debug signer. It contains local loopback development configuration and is not a production release. Physical restart/offline/reconnect validation of this exact artifact is pending because ADB currently sees no device. |
-| Purple Universe P1 debug APK | Build and signature gates passed for `build/app/outputs/flutter-apk/app-debug.apk`: 198,317,469 bytes, SHA-256 `A9E4B950E9637B7D7364165CC2D095BFAAFCF0EFE273F4F85C91A857CCFC76FC`, APK Signature Scheme v2, one Android debug signer. It has no production configuration, is not release-signed, and has not been visually/device validated. |
+| Purple Universe P1 local-device APK | Build, signature, install, and smoke gates passed for `CampusConnect-purple-universe-local-device-debug.apk` on the Galaxy A35. The backend-connected development app launched without a crash, retained the production-safe signed-out state, and exposed the development-only gallery while demo sessions remained disabled. This is a local debug artifact, not a release. |
+| Role feature blueprint local-device APK | Build and signature gates passed for `build/app/outputs/flutter-apk/CampusConnect-role-feature-blueprint-local-device-debug.apk`: 166,838,862 bytes, SHA-256 `C824F7451019C5C3BF1B2C4ED3736818D045DAF120E98858473A616AF2DC2470`, package `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), min SDK 24/target SDK 36, APK Signature Scheme v2, and one Android debug signer. It contains local loopback development configuration, enables the development-only gallery, disables demo sessions, and is not a production release. Physical installation is pending because neither USB nor wireless ADB currently discovers a device. |
 | iOS build/launch | Not run; this Windows host has no macOS/Xcode environment. |
 | Git diff integrity | The current Purple Universe foundation passes both `git diff --check` and the staged-tree check before commit. |
-| Hosted CI | Passed on the exact `main` baseline commit `bc7cc51e6772f6a41ab40858e3742057c5218709`: the Flutter job passed dependency resolution, format, analysis, all tests with coverage, release APK compilation, and credential-pattern scan; the database job passed Supabase start/reset, all 276 pgTAP assertions, schema lint, the 228-assertion real-backend verifier, and cleanup. GitHub Actions run `30008925152` completed successfully. |
+| Hosted CI | Passed on the exact Purple Universe foundation commit `aa962e07fb6f59ed73a19e7885c056fabd016e97`: the Flutter and database jobs completed successfully in GitHub Actions run `30012158842`. The earlier exact `main` baseline run `30008925152` also passed dependency resolution, format, analysis, tests/coverage, release APK compilation, credential scan, Supabase reset, all 276 pgTAP assertions, schema lint, the 228-assertion real-backend verifier, and cleanup. The current uncommitted feature-architecture increment has local source evidence only until it is committed, pushed, and its own hosted run completes. |
 | Git checkpointing | Repository-local authenticated-owner identity is configured. The `main` baseline and isolated P0 audit checkpoints are pushed with verified remote SHAs; each validated Purple Universe implementation checkpoint is committed and pushed separately. |
 
 ## Known limitations and blockers
 
-1. Purple Universe currently stops at the design foundations and shared status
-   badge. Ambient/Campus Flow rendering, glass and spectral primitives, gallery
-   migration, production screen migrations, current-theme APK/device evidence,
+1. Purple Universe currently stops at the design foundations, shared status
+   badge, and development-only role feature blueprint. Ambient/Campus Flow
+   rendering, glass and spectral primitives, broader gallery migration,
+   production screen migrations, current-theme APK/device evidence,
    accessibility QA, and performance profiling remain open.
 2. The prior backend-connected academics APK passes Student and Faculty end-to-end flows on the Android emulator and physical Galaxy A35. The encrypted-draft increment now passes its consolidated source, test, security-review, and APK-build gates; physical restart persistence, offline save, reconnect-without-auto-submit, and cleanup remain to be run on the exact new artifact once ADB can see the phone. Physical recovery-callback behavior and iOS validation remain unverified; iOS requires macOS/Xcode.
 3. `campusconnect://` is a custom scheme that another installed app could claim. Production recovery must use verified Android App Links and iOS Universal Links before release.
@@ -152,10 +177,11 @@ recovery-page widget coverage.
 
 ## Exact next milestone
 
-Implement the development-only Purple Universe gallery with bounded ambient,
-surface, glass, button, feedback, and attendance primitives before migrating
-Student Home and Student Attendance. Reconnecting the Galaxy A35 for
-encrypted-draft, accessibility, and performance evidence remains a parallel
-release gate, as do physical recovery callbacks, iOS, legal acknowledgement,
-notification preferences, invitation issuance/admin tooling, and the
-unfinished academic work.
+Complete the remaining development-only Purple Universe primitives, then
+compose Student Home and Faculty Teaching Overview from the existing
+authoritative timetable and Attendance data. Planned Feed, Chat, Calendar,
+Courses, Skills, and Opportunities controls remain absent until their exposure
+gates pass. Galaxy A35 encrypted-draft, accessibility, and performance evidence
+remains a parallel release gate, as do physical recovery callbacks, iOS, legal
+acknowledgement, notification preferences, invitation issuance/admin tooling,
+and the unfinished academic work.

@@ -17,6 +17,19 @@ These instructions apply to the entire repository.
   migration, positive and negative tests, and a documented security rationale.
 - Never commit secrets, privileged Supabase keys, signing material, local
   environment files, real student data, or generated release credentials.
+- Treat `docs/FEATURE_ARCHITECTURE.md` as the canonical Student/Faculty product
+  hierarchy. A production destination is exposed only when its complete
+  vertical slice exists, the institution enables the module, and the active
+  server-derived grant permits the resource. A delivery label or client flag
+  never grants authority.
+- Keep unfinished modules absent from production navigation. Do not ship
+  disabled coming-soon controls, fake counters, or production-looking demo
+  records. The development-only gallery may show an explicitly labelled
+  blueprint.
+- Implement shared Feed, Chat, Calendar, Courses, and Attendance domains with
+  role-specific server projections rather than duplicate Student and Faculty
+  silos. Career uses Student-owned Skills plus one typed Opportunities domain
+  for internships, jobs, and part-time work.
 
 ## Git and recovery
 
