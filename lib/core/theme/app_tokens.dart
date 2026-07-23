@@ -1,19 +1,21 @@
-import 'package:flutter/material.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_colors.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_radius.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
 
 abstract final class AppSpacing {
-  static const xxs = 4.0;
-  static const xs = 8.0;
-  static const sm = 12.0;
-  static const md = 16.0;
-  static const lg = 24.0;
-  static const xl = 32.0;
-  static const xxl = 48.0;
+  static const xxs = CcSpacing.xxs;
+  static const xs = CcSpacing.xs;
+  static const sm = CcSpacing.sm;
+  static const md = CcSpacing.md;
+  static const lg = CcSpacing.lg;
+  static const xl = CcSpacing.xl;
+  static const xxl = CcSpacing.xxxl;
 }
 
 abstract final class AppRadius {
-  static const control = 8.0;
-  static const card = 12.0;
-  static const prominent = 20.0;
+  static const control = CcRadius.control;
+  static const card = CcRadius.card;
+  static const prominent = CcRadius.prominent;
 }
 
 abstract final class AppBreakpoints {
@@ -22,6 +24,6 @@ abstract final class AppBreakpoints {
 }
 
 abstract final class AppColors {
-  static const lightSeed = Color(0xFF4F46E5);
-  static const darkSeed = Color(0xFF8B8CF8);
+  static const lightSeed = CcColors.lightPrimary;
+  static const darkSeed = CcColors.electricPurple;
 }

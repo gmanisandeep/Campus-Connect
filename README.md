@@ -7,6 +7,12 @@ CampusConnect is a new, app-first reconstruction of a unified campus operating p
 This repository contains the reviewed Phase 0 specification, a green Phase 1 Flutter foundation, the core of the Phase 2 identity vertical slice, and a first partial Phase 3/4 academics and attendance vertical slice:
 
 - Flutter Material 3 app with Riverpod, GoRouter, responsive Home/Profile/eligible-Academics navigation, secure session persistence, environment validation, typed failures, connectivity state, theme preferences, and a development-only design-system gallery.
+- Purple Universe P1 foundations with intentional dark and light `ThemeData`,
+  semantic palette/gradient/spacing/radius/typography/motion/elevation tokens,
+  a typed `CcThemeExtension`, accessible semantic status pairs, compatibility
+  tokens, and shared Material component defaults. Ambient effects, glass and
+  spectral components, gallery migration, and production-screen redesigns are
+  later checkpoints.
 - Supabase sign-in, password reset/recovery, crash-safe fail-closed session classification/restoration, profile completion, invitation acceptance, pending-invitation review, and server-derived institution/role selection. Recovery/OTP sessions are denied campus identity data by both the app and backend until a fresh password-authenticated session exists.
 - Fail-closed route and permission handling. Academics navigation is enabled only for a backend-configured active Student or Faculty grant; unfinished Campus, Career, Notifications, and the remaining academic/attendance surfaces are not exposed as dead production controls.
 - Server-derived institution-local today timetable, Student attendance summaries, Faculty assigned-class rosters, and atomic, idempotent attendance confirmation.
@@ -20,7 +26,18 @@ This repository contains the reviewed Phase 0 specification, a green Phase 1 Flu
 - A fresh local-device encrypted-draft APK built from the consolidated source gate. It verifies with APK Signature Scheme v2; physical restart/offline/reconnect validation of this exact artifact remains pending until the phone is visible to ADB again.
 - Android/iOS scaffolding, custom auth callback scheme, release network permission, development-only local-network allowances, and Flutter/database CI jobs.
 
-This is a **partial Phase 2/3/4 checkpoint**, not a completed release. The preserved device-loopback and emulator-host APKs are local debug builds, not production releases. The prior academics APK passes Student and Faculty end-to-end validation on both the Android emulator and physical device. The encrypted-draft increment now passes its consolidated format, analysis, 141-test, coverage, security-review, and signed-debug-APK gates. Physical persistence/offline/reconnect validation of that exact APK, physical recovery-callback, accessibility, performance, and iOS validation remain open, as do terms/privacy acknowledgement, notification preferences, invitation issuance/admin tooling, the rest of the academic experience, and later product verticals.
+This is a **partial Phase 2/3/4 and Purple Universe P1 checkpoint**, not a
+completed release. The preserved device-loopback and emulator-host APKs are
+local debug builds, not production releases, and predate the Purple Universe
+foundation. The prior academics APK passes Student and Faculty end-to-end
+validation on both the Android emulator and physical device. The consolidated
+source now passes formatting, zero-issue analysis, all 149 tests, and coverage
+at 59.11% raw or 68.86% excluding generated Drift code. Physical
+persistence/offline/reconnect validation of the encrypted-draft APK, a new
+foundation APK device validation, physical recovery-callback, accessibility,
+performance, and iOS validation remain open, as do terms/privacy acknowledgement,
+notification preferences, invitation issuance/admin tooling, the rest of the
+academic experience, and later product verticals.
 
 ## Prerequisites
 
@@ -78,4 +95,5 @@ On the validated Windows host, Application Control blocks Flutter's
 `flutter build apk --release --no-tree-shake-icons`; hosted Linux CI keeps the
 normal tree-shaken release command.
 
-The source and local-backend gates pass. The completed identity emulator and physical-device evidence, current academics/attendance Android status, remaining platform/product blockers, and exact counts are recorded in `docs/IMPLEMENTATION_STATUS.md`.
+The current local source gates pass; backend, APK, emulator, and physical-device
+evidence is explicitly dated and scoped in `docs/IMPLEMENTATION_STATUS.md`.

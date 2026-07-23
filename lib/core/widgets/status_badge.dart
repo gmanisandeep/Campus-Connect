@@ -1,3 +1,4 @@
+import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:flutter/material.dart';
 
 enum AppStatus { success, warning, danger, neutral, pending }
@@ -10,23 +11,47 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final (color, icon) = switch (status) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final ccTheme =
+        theme.extension<CcThemeExtension>() ??
+        (theme.brightness == Brightness.dark
+            ? CcThemeExtension.dark()
+            : CcThemeExtension.light());
+    final (background, foreground, icon) = switch (status) {
       AppStatus.success => (
-        scheme.primaryContainer,
+        ccTheme.successContainer,
+        ccTheme.success,
         Icons.check_circle_outline,
       ),
-      AppStatus.warning => (scheme.tertiaryContainer, Icons.warning_amber),
-      AppStatus.danger => (scheme.errorContainer, Icons.error_outline),
-      AppStatus.pending => (scheme.secondaryContainer, Icons.schedule),
-      AppStatus.neutral => (scheme.surfaceContainerHighest, Icons.info_outline),
+      AppStatus.warning => (
+        ccTheme.warningContainer,
+        ccTheme.warning,
+        Icons.warning_amber,
+      ),
+      AppStatus.danger => (
+        ccTheme.dangerContainer,
+        ccTheme.danger,
+        Icons.error_outline,
+      ),
+      AppStatus.pending => (
+        scheme.secondaryContainer,
+        scheme.onSecondaryContainer,
+        Icons.schedule,
+      ),
+      AppStatus.neutral => (
+        scheme.surfaceContainerHighest,
+        scheme.onSurfaceVariant,
+        Icons.info_outline,
+      ),
     };
     return Semantics(
       label: 'Status: $label',
       child: Chip(
-        avatar: Icon(icon, size: 18),
+        avatar: Icon(icon, size: 18, color: foreground),
         label: Text(label),
-        backgroundColor: color,
+        labelStyle: theme.textTheme.labelMedium?.copyWith(color: foreground),
+        backgroundColor: background,
         visualDensity: VisualDensity.compact,
       ),
     );

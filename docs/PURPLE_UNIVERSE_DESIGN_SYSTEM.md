@@ -33,39 +33,43 @@ recovery, and long reading surfaces favor clarity.
 
 ## Integration with the current architecture
 
-The current `lib/core/theme` tokens and Material 3 theme are the migration
-anchor. Purple Universe should evolve that boundary rather than bypass it.
+The existing `lib/core/theme` boundary remains the migration anchor. The P1
+foundation is now implemented there without bypassing current feature
+architecture.
 
-Recommended staged structure:
+Implemented foundation and planned component structure:
 
 ```text
 lib/core/theme/
-  app_tokens.dart                 transitional compatibility exports
-  app_theme.dart                  ThemeData composition
+  app_tokens.dart                 implemented compatibility exports
+  app_theme.dart                  implemented ThemeData composition
   purple_universe/
-    cc_colors.dart
-    cc_gradients.dart
-    cc_spacing.dart
-    cc_radius.dart
-    cc_typography.dart
-    cc_motion.dart
-    cc_elevation.dart
-    cc_theme_extensions.dart
+    cc_colors.dart                implemented
+    cc_gradients.dart             implemented
+    cc_spacing.dart               implemented
+    cc_radius.dart                implemented
+    cc_typography.dart            implemented
+    cc_motion.dart                implemented
+    cc_elevation.dart             implemented
+    cc_theme_extension.dart       implemented
 
 lib/core/widgets/
   purple_universe/
-    cc_scaffold.dart
-    cc_surface.dart
-    cc_button.dart
-    cc_navigation.dart
-    cc_feedback.dart
-    cc_data_display.dart
-    cc_ambient_background.dart
+    cc_scaffold.dart              planned
+    cc_surface.dart               planned
+    cc_button.dart                planned
+    cc_navigation.dart            planned
+    cc_feedback.dart              planned
+    cc_data_display.dart          planned
+    cc_ambient_background.dart    planned
 ```
 
 Existing `AppSpacing`, `AppRadius`, and shared state widgets remain supported
 during migration. New features consume semantic `Cc*` tokens. Compatibility
 aliases are removed only after every production screen and test has migrated.
+P1 also installs typed semantic status roles and accessible Material component
+defaults. It does not yet implement ambient rendering, custom glass/spectral
+components, gallery migration, or redesigned production screens.
 
 ## Color foundations
 
@@ -156,21 +160,21 @@ control points, not independent generic blobs.
   crossing highlight.
 - Shape: broad magnetic arcs and narrow connecting filaments; no logo or
   proprietary-art resemblance.
-- Pace: one subtle ambient cycle over roughly 14–24 seconds.
+- Pace: one subtle ambient cycle over 12–20 seconds.
 - Depth: a sharp low-opacity core plus one bounded soft halo.
 - Placement: splash, authentication hero, compressed dashboard header,
   selected empty states, and the development gallery.
 - Exclusions: long roster bodies, every list row, dialogs, keyboard forms, and
   full-screen repainting behind a scrolling list.
 
-The painter/shader accepts a stable seed, progress, palette, quality, and
-reduced-motion flag. In reduced motion it renders a static, balanced frame. It
-is isolated in a `RepaintBoundary`, pauses offscreen, and never owns business
-state.
+The planned painter/shader must accept a stable seed, progress, palette,
+quality, and reduced-motion flag. In reduced motion it renders a static,
+balanced frame. It is isolated in a `RepaintBoundary`, pauses offscreen, and
+never owns business state.
 
 ## Ambient background quality
 
-`CcAmbientBackground` composes:
+The planned `CcAmbientBackground` composes:
 
 1. an opaque theme canvas;
 2. at most three bounded radial glows;
@@ -200,9 +204,9 @@ meaning, contrast, or available actions.
 | glass | 72–88% surface, bounded 8–16 sigma blur, inner highlight |
 | floating focal | glass/raised surface with one restrained spectral edge |
 
-`CcGlassSurface` is not a default card. It requires a bounded clip and exposes
-surface strength, border emphasis, and optional active glow. Full-screen
-`BackdropFilter` is prohibited.
+The planned `CcGlassSurface` is not a default card. It requires a bounded clip
+and exposes surface strength, border emphasis, and optional active glow.
+Full-screen `BackdropFilter` is prohibited.
 
 Contextual lighting:
 
@@ -223,10 +227,10 @@ Android/iOS rendering, APK size, and golden baselines reviewed.
 | display | 44 | 700 | 1.08 | rare onboarding statement |
 | hero | 34 | 700 | 1.12 | dashboard greeting/metric |
 | page title | 28 | 700 | 1.18 | page heading |
-| section | 22 | 650 | 1.22 | section heading |
-| card title | 17 | 650 | 1.28 | card identity |
-| body large | 16 | 450 | 1.50 | primary reading |
-| body | 14 | 450 | 1.48 | normal content |
+| section | 22 | 600 | 1.22 | section heading |
+| card title | 17 | 600 | 1.28 | card identity |
+| body large | 16 | 400 | 1.50 | primary reading |
+| body | 14 | 400 | 1.48 | normal content |
 | supporting | 13 | 500 | 1.40 | metadata/support |
 | micro | 11 | 600 | 1.35 | short label, never long copy |
 
@@ -260,7 +264,7 @@ stretch phone cards edge to edge.
 
 ## Core component contract
 
-The first implementation slice introduces:
+The next component slice will introduce:
 
 - `CcScaffold`: theme canvas, ambient quality, safe areas, and foreground slot;
 - `CcSurface` / `CcGlassSurface`: controlled hierarchy and bounded effects;
@@ -318,7 +322,8 @@ design-system change, not a one-off feature override.
 
 ## Migration sequence
 
-1. Add token/theme extensions with compatibility aliases.
+1. Add token/theme extensions with compatibility aliases. **Implemented and
+   locally validated in P1.**
 2. Add ambient, surface, button, navigation, feedback, and attendance
    primitives to the gallery.
 3. Migrate shell/navigation and loading/error/offline presentation.

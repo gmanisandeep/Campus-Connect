@@ -62,7 +62,9 @@ system hierarchy:
 ```text
 lib/core/theme/
   app_tokens.dart             existing spacing, radius, color, breakpoints
-  app_motion.dart             durations, curves, springs, resolved policy
+  purple_universe/
+    cc_motion.dart            implemented durations, curves, springs
+  motion_policy.dart          planned resolved reduced-motion policy
   app_theme.dart              theme animation and component defaults
 
 lib/core/routing/
@@ -91,10 +93,11 @@ the new value, but the provider remains unaware of that animation.
 
 ### Proposed centralized API
 
-`app_motion.dart` should expose one vocabulary:
+`cc_motion.dart` exposes the foundation vocabulary. The reduced-motion resolver
+remains part of the later motion-component checkpoint:
 
 ```dart
-abstract final class AppMotionDurations {
+abstract final class CcMotionDurations {
   static const instant = Duration(milliseconds: 80);
   static const quick = Duration(milliseconds: 140);
   static const standard = Duration(milliseconds: 220);
@@ -106,14 +109,14 @@ abstract final class AppMotionDurations {
   static const ambientLong = Duration(seconds: 20);
 }
 
-abstract final class AppMotionCurves {
+abstract final class CcMotionCurves {
   static const standard = Cubic(0.20, 0.00, 0.00, 1.00);
   static const decelerate = Cubic(0.00, 0.00, 0.00, 1.00);
   static const accelerate = Cubic(0.30, 0.00, 1.00, 1.00);
   static const ambient = Curves.easeInOutSine;
 }
 
-abstract final class AppMotionSprings {
+abstract final class CcMotionSprings {
   static final spring = SpringDescription.withDampingRatio(
     mass: 1,
     stiffness: 520,
