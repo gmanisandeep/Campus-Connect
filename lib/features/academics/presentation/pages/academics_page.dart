@@ -7,6 +7,7 @@ import 'package:campus_connect/core/errors/app_failure.dart';
 import 'package:campus_connect/core/networking/connectivity_service.dart';
 import 'package:campus_connect/core/theme/app_tokens.dart';
 import 'package:campus_connect/core/widgets/async_state_views.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_data_display.dart';
 import 'package:campus_connect/core/widgets/status_badge.dart';
 import 'package:campus_connect/features/academics/domain/academic_access.dart';
 import 'package:campus_connect/features/academics/domain/academic_dashboard.dart';
@@ -81,8 +82,22 @@ class AcademicsPage extends ConsumerWidget {
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          SliverAppBar.large(
-            title: Text(isFaculty ? 'Faculty academics' : 'Academics'),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.xl,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: CcSectionHeader(
+                title: isFaculty ? 'Teaching' : 'Academics',
+                supportingText: isFaculty
+                    ? 'Assigned classes, rosters, and attendance tools for '
+                          'your verified faculty access.'
+                    : 'Your authoritative timetable and attendance information.',
+              ),
+            ),
           ),
           SliverPadding(
             padding: const EdgeInsets.all(AppSpacing.md),
@@ -221,16 +236,17 @@ class _DashboardBody extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text(
-        MaterialLocalizations.of(context).formatFullDate(dashboard.date),
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      const SizedBox(height: AppSpacing.lg),
-      Text(
-        dashboard.role == AppRole.student
-            ? "Today's timetable"
+      CcSectionHeader(
+        title: dashboard.role == AppRole.student
+            ? viewingHistoricalDate
+                  ? 'Schedule for this date'
+                  : "Today's timetable"
+            : viewingHistoricalDate
+            ? 'Assigned classes for this date'
             : "Today's assigned classes",
-        style: Theme.of(context).textTheme.headlineSmall,
+        supportingText: MaterialLocalizations.of(
+          context,
+        ).formatFullDate(dashboard.date),
       ),
       const SizedBox(height: AppSpacing.sm),
       if (dashboard.schedule.isEmpty)
@@ -260,14 +276,11 @@ class _DashboardBody extends StatelessWidget {
           ),
       if (dashboard.role == AppRole.faculty && _otherDrafts.isNotEmpty) ...[
         const SizedBox(height: AppSpacing.lg),
-        Text(
-          'Saved on this device',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        const Text(
-          'Older or changed-class drafts remain visible here. '
-          'They are never submitted automatically.',
+        const CcSectionHeader(
+          title: 'Saved on this device',
+          supportingText:
+              'Older or changed-class drafts stay visible here and are never '
+              'submitted automatically.',
         ),
         const SizedBox(height: AppSpacing.sm),
         for (final draft in _otherDrafts)
@@ -283,10 +296,7 @@ class _DashboardBody extends StatelessWidget {
       ],
       if (dashboard.role == AppRole.student) ...[
         const SizedBox(height: AppSpacing.lg),
-        Text(
-          'Attendance summary',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        const CcSectionHeader(title: 'Attendance summary'),
         const SizedBox(height: AppSpacing.sm),
         if (dashboard.attendanceSummary.isEmpty)
           const AppEmptyState(

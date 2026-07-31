@@ -1,5 +1,6 @@
 import 'package:campus_connect/core/theme/app_theme.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
+import 'package:campus_connect/core/widgets/app_search_field.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_ambient_background.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_button.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_scaffold.dart';
@@ -129,5 +130,59 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Welcome back'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);
+  });
+
+  testWidgets('auth composition has no empty idle scroll extent', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(393, 852);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        home: const CcAuthScaffold(
+          heroTitle: 'Your campus, in one place.',
+          heroDescription: 'Verified access for campus work.',
+          panelTitle: 'Welcome back',
+          child: Text('Sign in'),
+        ),
+      ),
+    );
+
+    final scrollable = tester.state<ScrollableState>(find.byType(Scrollable));
+    expect(scrollable.position.maxScrollExtent, 0);
+  });
+
+  testWidgets('uncontrolled search clear removes the visible value', (
+    tester,
+  ) async {
+    var query = '';
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: Scaffold(
+          body: AppSearchField(
+            hint: 'Search campus',
+            onChanged: (value) => query = value,
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextField), 'library');
+    await tester.pump();
+    expect(query, 'library');
+
+    await tester.tap(find.byTooltip('Clear search'));
+    await tester.pump();
+
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller?.text,
+      '',
+    );
+    expect(query, '');
   });
 }

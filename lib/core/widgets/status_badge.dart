@@ -47,12 +47,14 @@ class StatusBadge extends StatelessWidget {
     };
     return Semantics(
       label: 'Status: $label',
-      child: Chip(
-        avatar: Icon(icon, size: 18, color: foreground),
-        label: Text(label),
-        labelStyle: theme.textTheme.labelMedium?.copyWith(color: foreground),
-        backgroundColor: background,
-        visualDensity: VisualDensity.compact,
+      child: ExcludeSemantics(
+        child: Chip(
+          avatar: Icon(icon, size: 18, color: foreground),
+          label: Text(label),
+          labelStyle: theme.textTheme.labelMedium?.copyWith(color: foreground),
+          backgroundColor: background,
+          visualDensity: VisualDensity.compact,
+        ),
       ),
     );
   }

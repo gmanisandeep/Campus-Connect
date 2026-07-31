@@ -82,9 +82,15 @@ class CcAuthScaffold extends StatelessWidget {
           final gutter = constraints.maxWidth >= 600
               ? CcSpacing.xl
               : CcSpacing.md;
+          final contentPadding = EdgeInsets.fromLTRB(
+            gutter,
+            compactHero ? CcSpacing.sm : CcSpacing.lg,
+            gutter,
+            CcSpacing.lg,
+          );
           final availableHeight = math.max(
             0.0,
-            constraints.maxHeight - mediaQuery.viewInsets.bottom,
+            constraints.maxHeight - contentPadding.vertical,
           );
 
           final hero = _CcAuthHero(
@@ -129,12 +135,7 @@ class CcAuthScaffold extends StatelessWidget {
 
           return SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: EdgeInsets.fromLTRB(
-              gutter,
-              compactHero ? CcSpacing.sm : CcSpacing.lg,
-              gutter,
-              CcSpacing.lg,
-            ),
+            padding: contentPadding,
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: availableHeight),
               child: wide

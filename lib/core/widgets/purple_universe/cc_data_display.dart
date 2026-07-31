@@ -74,3 +74,63 @@ class CcIconTile extends StatelessWidget {
     ),
   );
 }
+
+class CcSectionHeader extends StatelessWidget {
+  const CcSectionHeader({
+    required this.title,
+    this.supportingText,
+    this.action,
+    super.key,
+  });
+
+  final String title;
+  final String? supportingText;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ccTheme =
+        theme.extension<CcThemeExtension>() ??
+        (theme.brightness == Brightness.dark
+            ? CcThemeExtension.dark()
+            : CcThemeExtension.light());
+    final copy = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: theme.textTheme.headlineSmall),
+        if (supportingText != null) ...[
+          const SizedBox(height: CcSpacing.xxs),
+          Text(
+            supportingText!,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: ccTheme.textSecondary,
+            ),
+          ),
+        ],
+      ],
+    );
+    if (action == null) return copy;
+
+    final stack = MediaQuery.textScalerOf(context).scale(1) > 1.3;
+    if (stack) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          copy,
+          const SizedBox(height: CcSpacing.sm),
+          Align(alignment: Alignment.centerLeft, child: action),
+        ],
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(child: copy),
+        const SizedBox(width: CcSpacing.md),
+        action!,
+      ],
+    );
+  }
+}

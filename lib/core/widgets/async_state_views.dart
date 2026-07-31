@@ -18,7 +18,6 @@ class AppEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     container: true,
-    header: true,
     child: Padding(
       padding: const EdgeInsets.all(AppSpacing.xl),
       child: Column(
@@ -26,7 +25,10 @@ class AppEmptyState extends StatelessWidget {
         children: [
           Icon(icon, size: 48),
           const SizedBox(height: AppSpacing.md),
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
+          Semantics(
+            header: true,
+            child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+          ),
           const SizedBox(height: AppSpacing.xs),
           Text(message, textAlign: TextAlign.center),
           if (action != null) ...[
