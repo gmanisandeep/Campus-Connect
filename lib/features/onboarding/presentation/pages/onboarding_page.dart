@@ -5,6 +5,10 @@ import 'package:campus_connect/core/auth/app_session.dart';
 import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/errors/app_failure.dart';
 import 'package:campus_connect/core/theme/app_tokens.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_button.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_feedback.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_scaffold.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_surface.dart';
 import 'package:campus_connect/features/identity/presentation/controllers/identity_action_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,23 +36,12 @@ class OnboardingPage extends ConsumerWidget {
           )
         : const _OnboardingUnavailable();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: child,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return CcAuthScaffold(
+      heroTitle: 'Your campus identity, confirmed.',
+      heroDescription:
+          'Finish the details required by your institution, then choose the '
+          'verified access you want to use.',
+      child: child,
     );
   }
 }
@@ -73,17 +66,22 @@ class _AccessSelection extends ConsumerWidget {
       ),
       const SizedBox(height: AppSpacing.lg),
       for (final grant in grants)
-        Card.outlined(
-          child: ListTile(
-            key: Key('access-${grant.selectionKey}'),
-            leading: const Icon(Icons.badge_outlined),
-            title: Text(grant.institutionName),
-            subtitle: Text(grant.role.label),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => unawaited(
-              ref
-                  .read(sessionControllerProvider.notifier)
-                  .selectAccess(grant.institutionId, grant.role),
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: CcSurface(
+            variant: CcSurfaceVariant.outlined,
+            padding: EdgeInsets.zero,
+            child: ListTile(
+              key: Key('access-${grant.selectionKey}'),
+              leading: const Icon(Icons.badge_outlined),
+              title: Text(grant.institutionName),
+              subtitle: Text(grant.role.label),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => unawaited(
+                ref
+                    .read(sessionControllerProvider.notifier)
+                    .selectAccess(grant.institutionId, grant.role),
+              ),
             ),
           ),
         ),
@@ -143,11 +141,10 @@ class _ProfileCompletionState extends ConsumerState<_ProfileCompletion> {
           ),
           _ActionError(action: action),
           const SizedBox(height: AppSpacing.lg),
-          FilledButton(
+          CcPrimaryButton(
+            label: 'Continue',
+            isLoading: action.isLoading,
             onPressed: action.isLoading ? null : _submit,
-            child: action.isLoading
-                ? const _ButtonProgress()
-                : const Text('Continue'),
           ),
         ],
       ),
@@ -308,11 +305,10 @@ class _InvitationCompletionState extends ConsumerState<_InvitationCompletion> {
           ],
           _ActionError(action: action),
           const SizedBox(height: AppSpacing.lg),
-          FilledButton(
+          CcPrimaryButton(
+            label: 'Accept invitation',
+            isLoading: action.isLoading,
             onPressed: action.isLoading ? null : _submit,
-            child: action.isLoading
-                ? const _ButtonProgress()
-                : const Text('Accept invitation'),
           ),
           if (widget.allowCancel) ...[
             const SizedBox(height: AppSpacing.sm),
@@ -362,22 +358,13 @@ class _ActionError extends StatelessWidget {
     if (message == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.sm),
-      child: Text(
-        message,
-        style: TextStyle(color: Theme.of(context).colorScheme.error),
+      child: CcInlineMessage(
+        message: message,
+        tone: CcMessageTone.danger,
+        liveRegion: true,
       ),
     );
   }
-}
-
-class _ButtonProgress extends StatelessWidget {
-  const _ButtonProgress();
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.square(
-    dimension: 20,
-    child: CircularProgressIndicator(strokeWidth: 2),
-  );
 }
 
 class _OnboardingUnavailable extends StatelessWidget {
