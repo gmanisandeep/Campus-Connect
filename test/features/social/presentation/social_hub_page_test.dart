@@ -1,3 +1,7 @@
+import 'package:campus_connect/core/auth/access_grant.dart';
+import 'package:campus_connect/core/auth/app_role.dart';
+import 'package:campus_connect/core/auth/app_session.dart';
+import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/theme/app_theme.dart';
 import 'package:campus_connect/features/social/data/supabase_social_repository.dart';
 import 'package:campus_connect/features/social/domain/social.dart';
@@ -46,6 +50,7 @@ void main() {
             likedByViewer: false,
             savedByViewer: false,
             isOfficial: true,
+            isCollegeVerified: true,
             institutionName: 'Verified College',
           ),
         ],
@@ -74,13 +79,43 @@ void main() {
       );
     },
   );
+
+  testWidgets('professional profile exposes truthful college verification', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(const SocialHubPage(initialSection: 4), session: _verifiedSession()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Avery Morgan'), findsOneWidget);
+    expect(find.text('@viewer_one'), findsOneWidget);
+    expect(find.text('Student · North Valley Institute'), findsOneWidget);
+    expect(find.text('College verified'), findsOneWidget);
+    expect(find.text('Edit profile'), findsOneWidget);
+
+    await tester.tap(find.text('Edit profile'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Professional bio'), findsOneWidget);
+    expect(find.text('Message requests'), findsOneWidget);
+    expect(find.text('Save profile'), findsOneWidget);
+  });
 }
 
-Widget _app(Widget child, {SocialRepository? repository}) => ProviderScope(
+Widget _app(
+  Widget child, {
+  SocialRepository? repository,
+  AppSession? session,
+}) => ProviderScope(
   overrides: [
     socialRepositoryProvider.overrideWithValue(
       repository ?? const _FakeSocialRepository(),
     ),
+    if (session != null)
+      sessionControllerProvider.overrideWith(
+        () => _FixedSessionController(session),
+      ),
   ],
   child: MaterialApp(
     theme: AppTheme.light(),
@@ -89,6 +124,41 @@ Widget _app(Widget child, {SocialRepository? repository}) => ProviderScope(
     home: child,
   ),
 );
+
+class _FixedSessionController extends SessionController {
+  _FixedSessionController(this.initialSession);
+
+  final AppSession initialSession;
+
+  @override
+  AppSession build() => initialSession;
+}
+
+AppSession _verifiedSession() {
+  const grant = AccessGrant(
+    membershipId: 'membership',
+    institutionId: 'institution',
+    institutionName: 'North Valley Institute',
+    role: AppRole.student,
+    permissions: {},
+  );
+  const identity = IdentityContext(
+    userId: 'viewer-1',
+    displayName: 'Avery Morgan',
+    profileCompleted: true,
+    memberships: [
+      MembershipSummary(
+        id: 'membership',
+        institutionId: 'institution',
+        institutionName: 'North Valley Institute',
+        institutionActive: true,
+        status: MembershipStatus.active,
+        grants: [grant],
+      ),
+    ],
+  );
+  return const AppSession.authenticated(identity: identity, activeGrant: grant);
+}
 
 class _FakeSocialRepository implements SocialRepository {
   const _FakeSocialRepository({this.posts = const []});

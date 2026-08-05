@@ -26,6 +26,35 @@ class SupabaseSocialRepository implements SocialRepository {
   });
 
   @override
+  Future<SocialProfile> updateProfile({
+    required String username,
+    required String bio,
+    required bool isPublic,
+    required String allowMessageRequests,
+    SocialUpload? avatar,
+    String? existingAvatarPath,
+  }) => _run(() async {
+    var avatarPath = existingAvatarPath;
+    if (avatar != null) {
+      avatarPath = await _upload(
+        avatar,
+        bucket: 'social-media',
+        folder: 'avatars',
+      );
+    } else if (avatarPath?.startsWith('http') == true) {
+      avatarPath = Uri.tryParse(avatarPath!)?.pathSegments.skip(5).join('/');
+    }
+    final value = await _rpc('update_social_profile', {
+      'target_username': username.trim().toLowerCase(),
+      'target_bio': bio.trim(),
+      'target_avatar_path': avatarPath,
+      'target_is_public': isPublic,
+      'target_allow_message_requests': allowMessageRequests,
+    });
+    return _profile(_map(value));
+  });
+
+  @override
   Future<List<SocialPost>> loadFeed(SocialFeedMode mode) => _run(() async {
     final value = await _rpc('list_social_feed', {
       'feed_mode': mode.key,
@@ -43,29 +72,45 @@ class SupabaseSocialRepository implements SocialRepository {
     bool official = false,
   }) => _run(() async {
     final media = <Map<String, Object?>>[];
-    for (var index = 0; index < uploads.length; index++) {
-      final upload = uploads[index];
-      final path = await _upload(
-        upload,
-        bucket: 'social-media',
-        folder: 'posts',
-      );
-      media.add({
-        'storage_path': path,
-        'media_kind': upload.kind.name,
-        'mime_type': upload.mimeType,
-        'alt_text': upload.altText,
-        'sort_order': index,
+    final uploadedPaths = <String>[];
+    try {
+      for (var index = 0; index < uploads.length; index++) {
+        final upload = uploads[index];
+        final path = await _upload(
+          upload,
+          bucket: 'social-media',
+          folder: 'posts',
+        );
+        uploadedPaths.add(path);
+        media.add({
+          'storage_path': path,
+          'media_kind': upload.kind.name,
+          'mime_type': upload.mimeType,
+          'alt_text': upload.altText,
+          'sort_order': index,
+        });
+      }
+      await _rpc('create_social_post', {
+        'target_body': body.trim(),
+        'target_visibility': visibility,
+        'target_client_post_id': _uuid.v4(),
+        'target_institution_id': institutionId,
+        'target_is_official': official,
+        'target_media': media,
       });
+    } on Object {
+      if (uploadedPaths.isNotEmpty) {
+        try {
+          await _gateway.client.storage
+              .from('social-media')
+              .remove(uploadedPaths);
+        } on Object {
+          // Preserve the original publishing failure. Storage lifecycle jobs
+          // may clean up any object that could not be removed immediately.
+        }
+      }
+      rethrow;
     }
-    await _rpc('create_social_post', {
-      'target_body': body.trim(),
-      'target_visibility': visibility,
-      'target_client_post_id': _uuid.v4(),
-      'target_institution_id': institutionId,
-      'target_is_official': official,
-      'target_media': media,
-    });
   });
 
   @override
@@ -302,6 +347,7 @@ class SupabaseSocialRepository implements SocialRepository {
     likedByViewer: value['liked_by_viewer'] == true,
     savedByViewer: value['saved_by_viewer'] == true,
     isOfficial: value['is_official'] == true,
+    isCollegeVerified: value['author_verified'] == true,
     institutionName: value['institution_name'] as String?,
   );
 

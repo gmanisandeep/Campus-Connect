@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(47);
+select plan(51);
 
 select has_table('public', 'social_profiles', 'social profiles exist');
 select has_table('public', 'social_posts', 'social posts exist');
@@ -56,11 +56,48 @@ where user_id in (
 select set_config('request.jwt.claim.sub', 'b2000000-0000-0000-0000-000000000001', true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select lives_ok($$select public.ensure_social_profile()$$, 'authenticated users can create their social profile');
+select throws_ok(
+  $$select public.update_social_profile(
+    'social_one', 'Profile bio',
+    'b2000000-0000-0000-0000-000000000002/avatars/stolen.jpg',
+    true, 'everyone'
+  )$$,
+  'P0001',
+  'Invalid avatar ownership',
+  'a profile cannot claim another user avatar path'
+);
+select is(
+  public.update_social_profile(
+    'social_one', 'Profile bio',
+    'b2000000-0000-0000-0000-000000000001/avatars/profile.jpg',
+    true, 'verified'
+  )->>'avatar_path',
+  'b2000000-0000-0000-0000-000000000001/avatars/profile.jpg',
+  'a user can save an owned professional profile photo'
+);
 
 select isnt(
   public.create_social_post('Hello campuses', 'public', 'b3000000-0000-0000-0000-000000000001', null, false, '[]'::jsonb),
   null,
   'a signed-in user can publish a public text post'
+);
+select isnt(
+  public.create_social_post(
+    'A post with a real image attachment',
+    'public',
+    'b3000000-0000-0000-0000-000000000003',
+    null,
+    false,
+    jsonb_build_array(jsonb_build_object(
+      'storage_path', 'b2000000-0000-0000-0000-000000000001/posts/photo.jpg',
+      'media_kind', 'image',
+      'mime_type', 'image/jpeg',
+      'alt_text', 'Campus event',
+      'sort_order', 0
+    ))
+  ),
+  null,
+  'an owned image attachment is persisted with its post'
 );
 
 select is(
@@ -129,6 +166,11 @@ select is(
   jsonb_array_length(public.list_social_feed('college', null, 20)),
   1,
   'the college feed returns posts for a pending affiliation'
+);
+select is(
+  (public.list_social_feed('college', null, 20)->0->>'author_verified')::boolean,
+  false,
+  'pending affiliation does not receive the verified college badge'
 );
 
 select isnt(

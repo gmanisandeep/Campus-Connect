@@ -2,6 +2,14 @@ import 'package:campus_connect/features/social/domain/social.dart';
 
 abstract interface class SocialRepository {
   Future<SocialProfile> ensureProfile();
+  Future<SocialProfile> updateProfile({
+    required String username,
+    required String bio,
+    required bool isPublic,
+    required String allowMessageRequests,
+    SocialUpload? avatar,
+    String? existingAvatarPath,
+  });
   Future<List<SocialPost>> loadFeed(SocialFeedMode mode);
   Future<void> createPost({
     required String body,

@@ -42,6 +42,7 @@ class SocialPost {
     required this.likedByViewer,
     required this.savedByViewer,
     required this.isOfficial,
+    required this.isCollegeVerified,
     this.avatarPath,
     this.institutionName,
   });
@@ -60,6 +61,7 @@ class SocialPost {
   final bool likedByViewer;
   final bool savedByViewer;
   final bool isOfficial;
+  final bool isCollegeVerified;
   final String? institutionName;
 
   SocialPost copyWith({
@@ -83,6 +85,7 @@ class SocialPost {
     likedByViewer: likedByViewer ?? this.likedByViewer,
     savedByViewer: savedByViewer ?? this.savedByViewer,
     isOfficial: isOfficial,
+    isCollegeVerified: isCollegeVerified,
     institutionName: institutionName,
   );
 }

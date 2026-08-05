@@ -302,6 +302,10 @@ create or replace function public.update_social_profile(
 declare viewer_id uuid := auth.uid(); result_record public.social_profiles%rowtype;
 begin
   if viewer_id is null then raise exception 'Authentication required'; end if;
+  if target_avatar_path is not null
+    and split_part(target_avatar_path, '/', 1) <> viewer_id::text then
+    raise exception 'Invalid avatar ownership';
+  end if;
   insert into public.social_profiles (user_id, username, bio, avatar_path, is_public, allow_message_requests)
   values (viewer_id, lower(btrim(target_username)), btrim(target_bio), target_avatar_path, target_is_public, target_allow_message_requests)
   on conflict (user_id) do update set
@@ -479,7 +483,7 @@ create or replace function public.create_social_post(
   target_is_official boolean default false,
   target_media jsonb default '[]'::jsonb
 ) returns uuid language plpgsql security definer set search_path = '' as $$
-declare viewer_id uuid := auth.uid(); post_id uuid; media_record jsonb; media_count integer;
+declare viewer_id uuid := auth.uid(); created_post_id uuid; media_record jsonb; media_count integer;
 begin
   if viewer_id is null then raise exception 'Authentication required'; end if;
   perform public.ensure_social_profile();
@@ -499,16 +503,16 @@ begin
   insert into public.social_posts (author_user_id, institution_id, body, visibility, is_official, client_post_id)
   values (viewer_id, target_institution_id, btrim(coalesce(target_body, '')), target_visibility, target_is_official, target_client_post_id)
   on conflict (author_user_id, client_post_id) do update set client_post_id = excluded.client_post_id
-  returning id into post_id;
+  returning id into created_post_id;
   for media_record in select value from jsonb_array_elements(coalesce(target_media, '[]'::jsonb)) loop
     if split_part(media_record->>'storage_path', '/', 1) <> viewer_id::text then raise exception 'Invalid media ownership'; end if;
     insert into public.social_post_media (post_id, storage_path, media_kind, mime_type, width, height, duration_ms, alt_text, sort_order)
-    values (post_id, media_record->>'storage_path', media_record->>'media_kind', media_record->>'mime_type',
+    values (created_post_id, media_record->>'storage_path', media_record->>'media_kind', media_record->>'mime_type',
       nullif(media_record->>'width','')::integer, nullif(media_record->>'height','')::integer,
       nullif(media_record->>'duration_ms','')::integer, coalesce(media_record->>'alt_text',''), coalesce((media_record->>'sort_order')::smallint,0))
     on conflict (post_id, sort_order) do nothing;
   end loop;
-  return post_id;
+  return created_post_id;
 end;
 $$;
 
@@ -542,6 +546,13 @@ create or replace function public.list_social_feed(
       'published_at', post_record.published_at,
       'visibility', post_record.visibility,
       'is_official', post_record.is_official,
+      'author_verified', exists (
+        select 1
+        from public.institution_memberships membership_record
+        where membership_record.user_id = post_record.author_user_id
+          and membership_record.institution_id = post_record.institution_id
+          and membership_record.status = 'active'
+      ),
       'author_user_id', post_record.author_user_id,
       'author_name', coalesce(profile_record.display_name, social_record.username, 'Campus member'),
       'username', social_record.username,

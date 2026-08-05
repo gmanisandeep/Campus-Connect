@@ -13,6 +13,7 @@ import 'package:campus_connect/core/widgets/status_badge.dart';
 import 'package:campus_connect/features/identity/presentation/controllers/identity_action_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -61,6 +62,7 @@ class ProfilePage extends ConsumerWidget {
               _CampusIdCard(
                 displayName: session.displayName,
                 activeGrant: activeGrant,
+                onOpenPublicProfile: () => context.go('/social?section=4'),
               ),
               const SizedBox(height: CcSpacing.xl),
               const CcSectionHeader(title: 'Appearance'),
@@ -226,10 +228,15 @@ class ProfilePage extends ConsumerWidget {
 }
 
 class _CampusIdCard extends StatelessWidget {
-  const _CampusIdCard({required this.displayName, required this.activeGrant});
+  const _CampusIdCard({
+    required this.displayName,
+    required this.activeGrant,
+    required this.onOpenPublicProfile,
+  });
 
   final String? displayName;
   final AccessGrant? activeGrant;
+  final VoidCallback onOpenPublicProfile;
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -273,6 +280,12 @@ class _CampusIdCard extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.ccTheme.textSecondary,
               ),
+            ),
+            const SizedBox(height: CcSpacing.lg),
+            OutlinedButton.icon(
+              onPressed: onOpenPublicProfile,
+              icon: const Icon(Icons.account_circle_outlined),
+              label: const Text('View professional profile'),
             ),
           ],
         ),

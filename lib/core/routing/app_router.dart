@@ -127,7 +127,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/social',
-        builder: (context, state) => const SocialHubPage(),
+        builder: (context, state) => SocialHubPage(
+          initialSection:
+              int.tryParse(state.uri.queryParameters['section'] ?? '') ?? 0,
+        ),
       ),
       GoRoute(
         path: '/college-registration',

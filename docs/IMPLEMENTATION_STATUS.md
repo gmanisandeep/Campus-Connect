@@ -217,6 +217,40 @@ Updated: 2026-08-05
   Flutter or Android fatal exception. It is debug-signed, not a production
   release.
 
+### Social publishing repair and professional profiles
+
+- The hosted project was probed through its public API on 2026-08-05. Both the
+  `list_public_institutions` RPC and `social-media` storage bucket returned
+  missing-resource responses, confirming that the pending Social migration—not
+  only the composer UI—blocks text publishing and image upload in the installed
+  hosted-config app.
+- The Social migration now fixes an ambiguous `post_id` variable that would
+  have rejected media rows even after deployment. A regression contract creates
+  a post with an owned image path. Failed post creation now attempts to remove
+  newly uploaded objects so a rejected RPC does not normally leave orphaned
+  media.
+- The mobile composer uses explicit photo/video/document MIME groups, previews
+  chosen images before publishing, exposes removable attachment tiles, and
+  reports picker, count, size, upload, and server failures inline.
+- Social profiles now support an avatar, username, professional bio, public
+  discoverability, and message-request privacy. Active institution membership
+  produces a labelled **College verified** badge on the profile and the
+  author’s posts; pending affiliation never produces that badge. Avatar paths
+  are constrained to the authenticated user’s storage folder.
+- A clean local reset applies all nine migrations. All 448 pgTAP assertions
+  pass, including media persistence, pending-badge denial, cross-user avatar
+  denial, and owned-avatar acceptance. Database lint reports no error; one
+  pre-existing unused-variable advisory remains in the affiliation RPC.
+- Flutter formatting, zero-issue analysis, all 198 tests, the release web
+  build, and the Impeccable UI detector pass. The hosted-config debug APK is
+  197,519,642 bytes with SHA-256
+  `5DC859AC7502F72C6A08129AC5EDAAA4E99A96F0C996C256698F01B99C26575A`;
+  it verifies with APK Signature Scheme v2 and one Android debug signer. It is
+  not a production release.
+- Hosted deployment remains pending until the Supabase CLI login opened for the
+  project owner is completed. Until then the hosted app must still describe
+  Social publishing as unavailable rather than verified.
+
 ### Whiteboard-derived role feature architecture
 
 - `FEATURE_ARCHITECTURE.md` is now the canonical translation of the requested

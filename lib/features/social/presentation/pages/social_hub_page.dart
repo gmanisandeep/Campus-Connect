@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:campus_connect/core/auth/app_role.dart';
 import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/errors/app_failure.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_radius.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_ambient_background.dart';
@@ -38,7 +39,7 @@ class SocialHubPage extends ConsumerStatefulWidget {
 }
 
 class _SocialHubPageState extends ConsumerState<SocialHubPage> {
-  late int _section = widget.initialSection;
+  late int _section = widget.initialSection.clamp(0, 4);
 
   static const _items = [
     CcNavigationItem(
@@ -259,13 +260,11 @@ class _SocialPostCard extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (post.isOfficial) ...[
+                if (post.isOfficial || post.isCollegeVerified) ...[
                   const SizedBox(width: CcSpacing.xxs),
-                  Icon(
-                    Icons.verified_rounded,
-                    size: 18,
-                    color: theme.colorScheme.primary,
-                    semanticLabel: 'Official college account',
+                  _CollegeVerifiedBadge(
+                    compact: true,
+                    official: post.isOfficial,
                   ),
                 ],
               ],
@@ -662,25 +661,51 @@ class _CreatePostViewState extends ConsumerState<_CreatePostView> {
   }
 
   Future<void> _pickMedia() async {
-    const acceptedTypes = XTypeGroup(
-      label: 'Images, video, and documents',
-      extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'mp4', 'webm', 'pdf'],
-    );
-    final result = await openFiles(acceptedTypeGroups: const [acceptedTypes]);
-    if (result.isEmpty) return;
-    final accepted = <SocialUpload>[];
-    for (final file in result.take(10 - _uploads.length)) {
-      final bytes = await file.readAsBytes();
-      if (bytes.length > 50 * 1024 * 1024) continue;
-      accepted.add(_socialUpload(file.name, bytes));
+    if (_uploads.length >= 10) {
+      setState(() => _error = 'A post can contain up to 10 attachments.');
+      return;
     }
-    setState(() {
-      _uploads.addAll(accepted);
-      if (accepted.length != result.length) {
-        _error =
-            'Some files were skipped. Use supported files smaller than 50 MB.';
+    try {
+      const images = XTypeGroup(
+        label: 'Photos',
+        extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+      );
+      const videos = XTypeGroup(
+        label: 'Videos',
+        extensions: ['mp4', 'webm'],
+        mimeTypes: ['video/mp4', 'video/webm'],
+      );
+      const documents = XTypeGroup(
+        label: 'Documents',
+        extensions: ['pdf'],
+        mimeTypes: ['application/pdf'],
+      );
+      final result = await openFiles(
+        acceptedTypeGroups: const [images, videos, documents],
+      );
+      if (result.isEmpty) return;
+      final accepted = <SocialUpload>[];
+      for (final file in result.take(10 - _uploads.length)) {
+        final bytes = await file.readAsBytes();
+        if (bytes.length > 50 * 1024 * 1024) continue;
+        accepted.add(_socialUpload(file.name, bytes));
       }
-    });
+      if (!mounted) return;
+      setState(() {
+        _uploads.addAll(accepted);
+        _error = accepted.length != result.length
+            ? 'Some files were skipped. Use supported files smaller than 50 MB.'
+            : null;
+      });
+    } on Object {
+      if (mounted) {
+        setState(() {
+          _error =
+              'The media picker could not open. Check access and try again.';
+        });
+      }
+    }
   }
 
   Future<void> _publish() async {
@@ -784,25 +809,21 @@ class _CreatePostViewState extends ConsumerState<_CreatePostView> {
               ],
               if (_uploads.isNotEmpty) ...[
                 const SizedBox(height: CcSpacing.md),
-                Wrap(
-                  spacing: CcSpacing.xs,
-                  runSpacing: CcSpacing.xs,
-                  children: [
-                    for (var index = 0; index < _uploads.length; index++)
-                      InputChip(
-                        avatar: Icon(
-                          _mediaIcon(_uploads[index].kind),
-                          size: 18,
-                        ),
-                        label: Text(
-                          _uploads[index].name,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        onDeleted: _publishing
-                            ? null
-                            : () => setState(() => _uploads.removeAt(index)),
-                      ),
-                  ],
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: CcSpacing.xs,
+                    mainAxisSpacing: CcSpacing.xs,
+                  ),
+                  itemCount: _uploads.length,
+                  itemBuilder: (context, index) => _PendingMediaTile(
+                    upload: _uploads[index],
+                    onRemove: _publishing
+                        ? null
+                        : () => setState(() => _uploads.removeAt(index)),
+                  ),
                 ),
               ],
               if (_error != null) ...[
@@ -846,6 +867,57 @@ class _CreatePostViewState extends ConsumerState<_CreatePostView> {
       ],
     );
   }
+}
+
+class _PendingMediaTile extends StatelessWidget {
+  const _PendingMediaTile({required this.upload, this.onRemove});
+
+  final SocialUpload upload;
+  final VoidCallback? onRemove;
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(CcRadius.control),
+    child: Stack(
+      fit: StackFit.expand,
+      children: [
+        ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: upload.kind == SocialMediaKind.image
+              ? Image.memory(upload.bytes, fit: BoxFit.cover)
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(_mediaIcon(upload.kind), size: 32),
+                    const SizedBox(height: CcSpacing.xxs),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CcSpacing.xs,
+                      ),
+                      child: Text(
+                        upload.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+        Positioned(
+          right: 4,
+          top: 4,
+          child: IconButton.filled(
+            tooltip: 'Remove ${upload.name}',
+            visualDensity: VisualDensity.compact,
+            onPressed: onRemove,
+            icon: const Icon(Icons.close_rounded, size: 18),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _InboxView extends ConsumerWidget {
@@ -1123,119 +1195,522 @@ class _SocialProfileView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(socialProfileProvider);
+    final session = ref.watch(sessionControllerProvider);
+    final activeGrant = session.activeGrant;
+    final verified = !provisional && activeGrant != null;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        CcSpacing.md,
-        CcSpacing.lg,
-        CcSpacing.md,
-        CcSpacing.xl,
-      ),
+      padding: const EdgeInsets.only(bottom: CcSpacing.xl),
       children: [
         profile.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Padding(
+            padding: EdgeInsets.all(CcSpacing.xl),
+            child: Center(child: CircularProgressIndicator()),
+          ),
           error: (error, _) => _SocialError(
             message: _message(error),
             onRetry: () async => ref.invalidate(socialProfileProvider),
           ),
-          data: (data) => CcSurface(
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 34,
-                  child: Text(data.username.characters.first.toUpperCase()),
-                ),
-                const SizedBox(width: CcSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '@${data.username}',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: CcSpacing.xxs),
-                      Text(
-                        data.bio.isEmpty
-                            ? 'Your CampusConnect profile'
-                            : data.bio,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+          data: (data) => _ProfessionalProfileHeader(
+            profile: data,
+            displayName: session.displayName ?? data.username,
+            institutionName: activeGrant?.institutionName,
+            roleLabel: activeGrant?.role.label,
+            verified: verified,
+            onEdit: () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => _EditSocialProfileSheet(profile: data),
             ),
           ),
         ),
-        const SizedBox(height: CcSpacing.md),
-        CcInlineMessage(
-          message: provisional
-              ? 'Social access is active. College verification is still pending, so Attendance, Calendar, Courses, and academic records remain locked.'
-              : 'Your verified campus role controls academic tools. Social posting and messaging remain separate from academic authority.',
-          tone: CcMessageTone.info,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CcSpacing.md,
+            CcSpacing.md,
+            CcSpacing.md,
+            0,
+          ),
+          child: CcInlineMessage(
+            message: provisional
+                ? 'Your social profile is live. The college badge appears only after your institution approves your membership.'
+                : 'Your college badge confirms active campus membership. It does not endorse personal posts or opinions.',
+            tone: CcMessageTone.info,
+          ),
         ),
         const SizedBox(height: CcSpacing.md),
         if (provisional)
-          const StudentAffiliationPanel()
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: CcSpacing.md),
+            child: StudentAffiliationPanel(),
+          )
         else ...[
-          CcSurface(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.school_outlined),
-                  title: const Text('Campus and academic access'),
-                  subtitle: const Text('Open your role-aware campus workspace'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => context.go('/home'),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.bookmarks_outlined),
-                  title: const Text('Saved posts'),
-                  onTap: () {
-                    ref.read(socialFeedModeProvider.notifier).state =
-                        SocialFeedMode.saved;
-                  },
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CcSpacing.md),
+            child: CcSurface(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.school_outlined),
+                    title: const Text('Campus and academic access'),
+                    subtitle: const Text(
+                      'Open your role-aware campus workspace',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.go('/home'),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.bookmarks_outlined),
+                    title: const Text('Saved posts'),
+                    onTap: () {
+                      ref.read(socialFeedModeProvider.notifier).state =
+                          SocialFeedMode.saved;
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ],
         if (kIsWeb) ...[
           const SizedBox(height: CcSpacing.md),
-          CcSurface(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.apartment_rounded),
-                  title: const Text('Register a college'),
-                  subtitle: const Text('Desktop College Console'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => context.go('/college-registration'),
-                ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(Icons.badge_outlined),
-                  title: const Text('Register as Faculty'),
-                  subtitle: const Text('Requires a verified college'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => context.go('/faculty-registration'),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CcSpacing.md),
+            child: CcSurface(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.apartment_rounded),
+                    title: const Text('Register a college'),
+                    subtitle: const Text('Desktop College Console'),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.go('/college-registration'),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.badge_outlined),
+                    title: const Text('Register as Faculty'),
+                    subtitle: const Text('Requires a verified college'),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => context.go('/faculty-registration'),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
         const SizedBox(height: CcSpacing.md),
-        CcSecondaryButton(
-          label: 'Sign out',
-          icon: Icons.logout_rounded,
-          onPressed: () =>
-              ref.read(sessionControllerProvider.notifier).signOut(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CcSpacing.md),
+          child: CcSecondaryButton(
+            label: 'Sign out',
+            icon: Icons.logout_rounded,
+            onPressed: () =>
+                ref.read(sessionControllerProvider.notifier).signOut(),
+          ),
         ),
       ],
     );
   }
+}
+
+class _ProfessionalProfileHeader extends StatelessWidget {
+  const _ProfessionalProfileHeader({
+    required this.profile,
+    required this.displayName,
+    required this.verified,
+    required this.onEdit,
+    this.institutionName,
+    this.roleLabel,
+  });
+
+  final SocialProfile profile;
+  final String displayName;
+  final String? institutionName;
+  final String? roleLabel;
+  final bool verified;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      CcSpacing.md,
+      CcSpacing.lg,
+      CcSpacing.md,
+      0,
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            _ProfileAvatar(
+              username: profile.username,
+              avatarPath: profile.avatarPath,
+              radius: 46,
+            ),
+            const Spacer(),
+            OutlinedButton.icon(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit_outlined, size: 18),
+              label: const Text('Edit profile'),
+            ),
+          ],
+        ),
+        const SizedBox(height: CcSpacing.md),
+        Row(
+          children: [
+            Flexible(
+              child: Text(
+                displayName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ),
+            if (verified) ...[
+              const SizedBox(width: CcSpacing.xs),
+              const _CollegeVerifiedBadge(),
+            ],
+          ],
+        ),
+        const SizedBox(height: CcSpacing.xxs),
+        Text(
+          '@${profile.username}',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: context.ccTheme.textSecondary,
+          ),
+        ),
+        if (profile.bio.isNotEmpty) ...[
+          const SizedBox(height: CcSpacing.sm),
+          Text(profile.bio, style: Theme.of(context).textTheme.bodyLarge),
+        ],
+        if (institutionName != null || roleLabel != null) ...[
+          const SizedBox(height: CcSpacing.sm),
+          Row(
+            children: [
+              Icon(
+                Icons.school_outlined,
+                size: 18,
+                color: context.ccTheme.textSecondary,
+              ),
+              const SizedBox(width: CcSpacing.xs),
+              Expanded(
+                child: Text(
+                  [roleLabel, institutionName].whereType<String>().join(' · '),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: context.ccTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+class _CollegeVerifiedBadge extends StatelessWidget {
+  const _CollegeVerifiedBadge({this.compact = false, this.official = false});
+
+  final bool compact;
+  final bool official;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = official ? 'Official college account' : 'College verified';
+    if (compact) {
+      return Tooltip(
+        message: label,
+        child: Icon(
+          Icons.verified_rounded,
+          size: 18,
+          color: Theme.of(context).colorScheme.primary,
+          semanticLabel: label,
+        ),
+      );
+    }
+    return Semantics(
+      label: label,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CcSpacing.xs,
+          vertical: CcSpacing.xxs,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(CcRadius.capsule),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.verified_rounded,
+              size: 16,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+            const SizedBox(width: CcSpacing.xxs),
+            Text(
+              'College verified',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({
+    required this.username,
+    required this.radius,
+    this.avatarPath,
+    this.bytes,
+  });
+
+  final String username;
+  final String? avatarPath;
+  final Uint8List? bytes;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final image = bytes != null
+        ? MemoryImage(bytes!) as ImageProvider
+        : avatarPath != null
+        ? NetworkImage(avatarPath!)
+        : null;
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      backgroundImage: image,
+      child: image == null
+          ? Text(
+              username.characters.first.toUpperCase(),
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+            )
+          : null,
+    );
+  }
+}
+
+class _EditSocialProfileSheet extends ConsumerStatefulWidget {
+  const _EditSocialProfileSheet({required this.profile});
+
+  final SocialProfile profile;
+
+  @override
+  ConsumerState<_EditSocialProfileSheet> createState() =>
+      _EditSocialProfileSheetState();
+}
+
+class _EditSocialProfileSheetState
+    extends ConsumerState<_EditSocialProfileSheet> {
+  late final TextEditingController _username;
+  late final TextEditingController _bio;
+  late bool _isPublic;
+  late String _messageRequests;
+  SocialUpload? _avatar;
+  bool _saving = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _username = TextEditingController(text: widget.profile.username);
+    _bio = TextEditingController(text: widget.profile.bio);
+    _isPublic = widget.profile.isPublic;
+    _messageRequests = widget.profile.allowMessageRequests;
+  }
+
+  @override
+  void dispose() {
+    _username.dispose();
+    _bio.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickAvatar() async {
+    try {
+      const images = XTypeGroup(
+        label: 'Profile photos',
+        extensions: ['jpg', 'jpeg', 'png', 'webp'],
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+      );
+      final file = await openFile(acceptedTypeGroups: const [images]);
+      if (file == null) return;
+      final bytes = await file.readAsBytes();
+      if (bytes.length > 10 * 1024 * 1024) {
+        setState(() => _error = 'Choose a profile photo smaller than 10 MB.');
+        return;
+      }
+      setState(() {
+        _avatar = _socialUpload(file.name, bytes);
+        _error = null;
+      });
+    } on Object {
+      if (mounted) {
+        setState(() => _error = 'The photo picker could not open. Try again.');
+      }
+    }
+  }
+
+  Future<void> _save() async {
+    final username = _username.text.trim().toLowerCase();
+    if (!RegExp(r'^[a-z0-9_]{3,30}$').hasMatch(username)) {
+      setState(() {
+        _error =
+            'Username must be 3–30 characters using letters, numbers, or underscores.';
+      });
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+    try {
+      await ref
+          .read(socialRepositoryProvider)
+          .updateProfile(
+            username: username,
+            bio: _bio.text,
+            isPublic: _isPublic,
+            allowMessageRequests: _messageRequests,
+            avatar: _avatar,
+            existingAvatarPath: widget.profile.avatarPath,
+          );
+      ref.invalidate(socialProfileProvider);
+      ref.invalidate(socialFeedControllerProvider);
+      if (mounted) Navigator.pop(context);
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = _message(error));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.fromLTRB(
+      CcSpacing.md,
+      CcSpacing.md,
+      CcSpacing.md,
+      MediaQuery.viewInsetsOf(context).bottom + CcSpacing.md,
+    ),
+    child: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Edit profile',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: CcSpacing.lg),
+          Center(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                _ProfileAvatar(
+                  username: _username.text.isEmpty
+                      ? widget.profile.username
+                      : _username.text,
+                  avatarPath: widget.profile.avatarPath,
+                  bytes: _avatar?.bytes,
+                  radius: 48,
+                ),
+                Positioned(
+                  right: -CcSpacing.xs,
+                  bottom: -CcSpacing.xs,
+                  child: IconButton.filled(
+                    tooltip: 'Choose profile photo',
+                    onPressed: _saving ? null : _pickAvatar,
+                    icon: const Icon(Icons.photo_camera_outlined),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: CcSpacing.lg),
+          TextField(
+            controller: _username,
+            maxLength: 30,
+            enabled: !_saving,
+            decoration: const InputDecoration(
+              labelText: 'Username',
+              prefixText: '@',
+            ),
+          ),
+          const SizedBox(height: CcSpacing.sm),
+          TextField(
+            controller: _bio,
+            maxLength: 300,
+            minLines: 3,
+            maxLines: 5,
+            enabled: !_saving,
+            decoration: const InputDecoration(
+              labelText: 'Professional bio',
+              hintText: 'What you study, teach, build, or care about',
+              alignLabelWithHint: true,
+            ),
+          ),
+          const SizedBox(height: CcSpacing.sm),
+          DropdownButtonFormField<String>(
+            initialValue: _messageRequests,
+            decoration: const InputDecoration(labelText: 'Message requests'),
+            items: const [
+              DropdownMenuItem(value: 'everyone', child: Text('Everyone')),
+              DropdownMenuItem(
+                value: 'verified',
+                child: Text('College-verified people'),
+              ),
+              DropdownMenuItem(value: 'followers', child: Text('Followers')),
+              DropdownMenuItem(value: 'nobody', child: Text('Nobody')),
+            ],
+            onChanged: _saving
+                ? null
+                : (value) => setState(
+                    () => _messageRequests = value ?? _messageRequests,
+                  ),
+          ),
+          SwitchListTile.adaptive(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Public profile'),
+            subtitle: const Text('People across colleges can discover you'),
+            value: _isPublic,
+            onChanged: _saving
+                ? null
+                : (value) => setState(() => _isPublic = value),
+          ),
+          if (_error != null) ...[
+            const SizedBox(height: CcSpacing.sm),
+            CcInlineMessage(
+              message: _error!,
+              tone: CcMessageTone.danger,
+              liveRegion: true,
+            ),
+          ],
+          const SizedBox(height: CcSpacing.md),
+          CcPrimaryButton(
+            label: 'Save profile',
+            icon: Icons.check_rounded,
+            isLoading: _saving,
+            onPressed: _saving ? null : _save,
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class _SocialTopBar extends StatelessWidget {
