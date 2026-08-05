@@ -183,6 +183,13 @@ Updated: 2026-08-05
   direct authenticated table access and exposes narrow RPC projections. All
   444 pgTAP assertions, all 197 Flutter tests, static analysis, formatting,
   `git diff --check`, and the final Impeccable UI detector pass locally.
+- The hosted-config debug APK is 171,049,640 bytes with SHA-256
+  `2A38C300D898E289A92F87FF0BC0D82B4832D9DA8B1560508E27F9E876F84C84`.
+  It was installed wirelessly over the existing app on the Galaxy A35 and the
+  `MainActivity` process launched without a captured Android or Flutter fatal
+  exception. The new hosted migration is not yet deployed: the Supabase
+  dashboard was unavailable from the in-app browser and the CLI has no account
+  token, so hosted Social behavior must not be described as verified yet.
 
 ### Whiteboard-derived role feature architecture
 
