@@ -191,6 +191,32 @@ Updated: 2026-08-05
   dashboard was unavailable from the in-app browser and the CLI has no account
   token, so hosted Social behavior must not be described as verified yet.
 
+### Campus Native content-first redesign
+
+- The prior effect-led Campus Pulse layer was removed after physical-device
+  review. The replacement **Campus Native** contract uses neutral near-black or
+  soft-light foundations, one violet ownership accent, flat native surfaces,
+  edge navigation, dense lists, and no scrolling glass, spotlight, glow, or
+  decorative animation.
+- Mobile authentication now removes the oversized marketing hero. Home opens
+  with compact identity and real permission/configuration-derived “jump back
+  in” shortcuts. Social uses a stable brand/action bar, one-tap feed filters,
+  edge-to-edge posts, and immediate engagement actions. Messages use dense
+  avatar rows and compact directional conversation bubbles. Academic and
+  college-authority contracts are unchanged.
+- Formatting, zero-issue static analysis, all 197 Flutter tests, the release
+  web build, `git diff --check`, and the final Impeccable detector pass. This
+  UI-only checkpoint preserves the most recent 444-assertion database evidence;
+  the database suite was not rerun because no schema, policy, RPC, repository,
+  or authorization code changed.
+- A developer-only demo build was physically inspected on the Galaxy A35 to
+  review authenticated Home and edge navigation without using real credentials.
+  The final hosted-config debug APK is 171,049,640 bytes with SHA-256
+  `79315C015884E530FA69E17368FF700CC302325B5786279F8D88E303BBCF449E`.
+  It replaced the demo build successfully and launched without a captured
+  Flutter or Android fatal exception. It is debug-signed, not a production
+  release.
+
 ### Whiteboard-derived role feature architecture
 
 - `FEATURE_ARCHITECTURE.md` is now the canonical translation of the requested

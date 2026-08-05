@@ -1,6 +1,5 @@
 import 'package:campus_connect/core/theme/purple_universe/cc_motion.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
-import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:flutter/material.dart';
 
 class CcPrimaryButton extends StatelessWidget {
@@ -78,7 +77,6 @@ class CcSecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _CcPressable(
     enabled: onPressed != null,
-    subtle: true,
     child: SizedBox(
       width: expand ? double.infinity : null,
       child: OutlinedButton.icon(
@@ -91,15 +89,10 @@ class CcSecondaryButton extends StatelessWidget {
 }
 
 class _CcPressable extends StatefulWidget {
-  const _CcPressable({
-    required this.child,
-    required this.enabled,
-    this.subtle = false,
-  });
+  const _CcPressable({required this.child, required this.enabled});
 
   final Widget child;
   final bool enabled;
-  final bool subtle;
 
   @override
   State<_CcPressable> createState() => _CcPressableState();
@@ -112,7 +105,6 @@ class _CcPressableState extends State<_CcPressable> {
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final active = widget.enabled && (_hovered || _pressed);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -136,24 +128,7 @@ class _CcPressableState extends State<_CcPressable> {
               : 1,
           duration: reduceMotion ? Duration.zero : CcMotionDurations.quick,
           curve: CcMotionCurves.soft,
-          child: AnimatedContainer(
-            duration: reduceMotion ? Duration.zero : CcMotionDurations.quick,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: !active || widget.subtle
-                  ? const <BoxShadow>[]
-                  : [
-                      BoxShadow(
-                        color: context.ccTheme.glowPrimary.withValues(
-                          alpha: 0.22,
-                        ),
-                        blurRadius: 20,
-                        spreadRadius: -6,
-                      ),
-                    ],
-            ),
-            child: widget.child,
-          ),
+          child: widget.child,
         ),
       ),
     );

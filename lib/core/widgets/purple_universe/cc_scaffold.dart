@@ -70,7 +70,9 @@ class CcAuthScaffold extends StatelessWidget {
     final textScale = mediaQuery.textScaler.scale(1);
 
     return CcScaffold(
-      ambientTone: ambientTone,
+      ambientTone: mediaQuery.size.width < 600
+          ? CcAmbientTone.quiet
+          : ambientTone,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final wide =
@@ -78,7 +80,10 @@ class CcAuthScaffold extends StatelessWidget {
               constraints.maxHeight >= 620 &&
               !keyboardOpen;
           final compactHero =
-              keyboardOpen || constraints.maxHeight < 620 || textScale > 1.35;
+              constraints.maxWidth < 600 ||
+              keyboardOpen ||
+              constraints.maxHeight < 620 ||
+              textScale > 1.35;
           final gutter = constraints.maxWidth >= 600
               ? CcSpacing.xl
               : CcSpacing.md;
@@ -103,7 +108,7 @@ class CcAuthScaffold extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 480),
             child: CcSurface(
               key: panelKey,
-              variant: CcSurfaceVariant.glass,
+              variant: CcSurfaceVariant.base,
               padding: EdgeInsets.all(
                 constraints.maxWidth < 360 ? CcSpacing.md : CcSpacing.lg,
               ),

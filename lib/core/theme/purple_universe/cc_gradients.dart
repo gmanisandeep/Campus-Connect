@@ -23,7 +23,8 @@ abstract final class CcGradients {
   static const deepSpace = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [CcColors.voidDark, Color(0xFF0F0824), Color(0xFF160B36)],
+    colors: [Color(0xFF171020), CcColors.spaceBlack, CcColors.spaceBlack],
+    stops: [0, 0.34, 1],
   );
 
   static const nebula = LinearGradient(
@@ -38,8 +39,9 @@ abstract final class CcGradients {
   );
 
   static const pearlHorizon = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [CcColors.cloudSurface, CcColors.lavenderMist, CcColors.paleBlue],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFF3EFFA), CcColors.pearlCanvas, CcColors.pearlCanvas],
+    stops: [0, 0.34, 1],
   );
 }

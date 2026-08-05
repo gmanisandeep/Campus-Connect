@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 abstract final class CcColors {
   // Dark foundations.
-  static const voidDark = Color(0xFF05030B);
-  static const spaceBlack = Color(0xFF080611);
-  static const deepNight = Color(0xFF0D0920);
-  static const midnightPurple = Color(0xFF120B2D);
-  static const nebulaSurface = Color(0xFF17102F);
-  static const raisedSurface = Color(0xFF1D153A);
+  static const voidDark = Color(0xFF070708);
+  static const spaceBlack = Color(0xFF0B0B0D);
+  static const deepNight = Color(0xFF101012);
+  static const midnightPurple = Color(0xFF151317);
+  static const nebulaSurface = Color(0xFF18181B);
+  static const raisedSurface = Color(0xFF202024);
 
   // Spectral range.
-  static const electricPurple = Color(0xFF8B5CF6);
+  static const electricPurple = Color(0xFFA970FF);
   static const ultraViolet = Color(0xFF7C3AED);
   static const hyperViolet = Color(0xFF9333EA);
   static const royalBlue = Color(0xFF315CFF);
@@ -21,10 +21,10 @@ abstract final class CcColors {
   static const softLavender = Color(0xFFC7B8FF);
 
   // Dark text.
-  static const starWhite = Color(0xFFF8F7FF);
-  static const moonWhite = Color(0xFFEAE7F5);
-  static const secondaryText = Color(0xFFB5AEC9);
-  static const mutedText = Color(0xFF827A99);
+  static const starWhite = Color(0xFFF7F7F8);
+  static const moonWhite = Color(0xFFE7E7EA);
+  static const secondaryText = Color(0xFFB7B4BD);
+  static const mutedText = Color(0xFF8A8790);
 
   // Semantic colors on dark surfaces.
   static const success = Color(0xFF7DE2B8);
@@ -37,19 +37,19 @@ abstract final class CcColors {
   static const infoContainer = Color(0xFF152E52);
   static const magentaContainer = Color(0xFF32123B);
   static const onMagentaContainer = Color(0xFFF2B6FF);
-  static const darkControlBorder = Color(0xFF827A99);
+  static const darkControlBorder = Color(0xFF77747D);
 
   // Purple Universe Light.
-  static const pearlCanvas = Color(0xFFF7F5FC);
-  static const lavenderMist = Color(0xFFF0ECFA);
-  static const cloudSurface = Color(0xFFFCFAFF);
+  static const pearlCanvas = Color(0xFFF7F7F8);
+  static const lavenderMist = Color(0xFFF0F0F2);
+  static const cloudSurface = Color(0xFFFCFCFD);
   static const raisedPearl = Color(0xFFFFFFFF);
   static const paleViolet = Color(0xFFE7DEFF);
   static const paleBlue = Color(0xFFE6F1FF);
-  static const inkIndigo = Color(0xFF17102F);
-  static const secondaryInk = Color(0xFF4F4765);
-  static const mutedInk = Color(0xFF716982);
-  static const lightPrimary = Color(0xFF6D35D7);
+  static const inkIndigo = Color(0xFF151317);
+  static const secondaryInk = Color(0xFF4D4A52);
+  static const mutedInk = Color(0xFF706D75);
+  static const lightPrimary = Color(0xFF6F38C5);
   static const lightLink = Color(0xFF165FCC);
   static const lightControlBorder = Color(0xFF968EA3);
   static const lightSuccess = Color(0xFF176B4D);

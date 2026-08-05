@@ -20,7 +20,7 @@ abstract final class AppTheme {
       secondary: ccTheme.textSecondary,
     );
     final controlShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(CcRadius.control),
+      borderRadius: BorderRadius.circular(CcRadius.capsule),
     );
 
     return ThemeData(
@@ -46,29 +46,29 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: ccTheme.raisedSurface,
+        fillColor: ccTheme.surface,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: CcSpacing.md,
           vertical: CcSpacing.md,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CcRadius.control),
+          borderRadius: BorderRadius.circular(CcRadius.card),
           borderSide: BorderSide(color: ccTheme.controlBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CcRadius.control),
+          borderRadius: BorderRadius.circular(CcRadius.card),
           borderSide: BorderSide(color: ccTheme.controlBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CcRadius.control),
+          borderRadius: BorderRadius.circular(CcRadius.card),
           borderSide: BorderSide(color: scheme.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CcRadius.control),
+          borderRadius: BorderRadius.circular(CcRadius.card),
           borderSide: BorderSide(color: scheme.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CcRadius.control),
+          borderRadius: BorderRadius.circular(CcRadius.card),
           borderSide: BorderSide(color: scheme.error, width: 1.5),
         ),
       ),
@@ -114,22 +114,22 @@ abstract final class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: CcSpacing.xs),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: 68,
         elevation: 0,
         backgroundColor: ccTheme.surface,
-        indicatorColor: scheme.primaryContainer,
+        indicatorColor: Colors.transparent,
         indicatorShape: const StadiumBorder(),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => textTheme.labelMedium?.copyWith(
             color: states.contains(WidgetState.selected)
-                ? scheme.onPrimaryContainer
+                ? scheme.primary
                 : ccTheme.textSecondary,
           ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             color: states.contains(WidgetState.selected)
-                ? scheme.onPrimaryContainer
+                ? scheme.primary
                 : ccTheme.textSecondary,
           ),
         ),
@@ -137,11 +137,11 @@ abstract final class AppTheme {
       navigationRailTheme: NavigationRailThemeData(
         elevation: 0,
         backgroundColor: ccTheme.surface,
-        indicatorColor: scheme.primaryContainer,
-        selectedIconTheme: IconThemeData(color: scheme.onPrimaryContainer),
+        indicatorColor: scheme.primary.withValues(alpha: 0.12),
+        selectedIconTheme: IconThemeData(color: scheme.primary),
         unselectedIconTheme: IconThemeData(color: ccTheme.textSecondary),
         selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
-          color: scheme.onPrimaryContainer,
+          color: scheme.primary,
         ),
         unselectedLabelTextStyle: textTheme.labelMedium,
       ),

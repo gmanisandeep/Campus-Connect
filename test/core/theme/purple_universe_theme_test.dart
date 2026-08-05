@@ -15,10 +15,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Purple Universe foundations', () {
     test('exposes the approved core palette and gradient stops', () {
-      expect(CcColors.voidDark, const Color(0xFF05030B));
-      expect(CcColors.electricPurple, const Color(0xFF8B5CF6));
+      expect(CcColors.voidDark, const Color(0xFF070708));
+      expect(CcColors.electricPurple, const Color(0xFFA970FF));
       expect(CcColors.neonCyan, const Color(0xFF36E4FF));
-      expect(CcColors.pearlCanvas, const Color(0xFFF7F5FC));
+      expect(CcColors.pearlCanvas, const Color(0xFFF7F7F8));
       expect(CcGradients.purpleCore.colors, const [
         Color(0xFF5B21B6),
         Color(0xFF7C3AED),

@@ -23,10 +23,11 @@ void main() {
       ),
     );
 
-    expect(find.text('Hello, Avery Morgan'), findsOneWidget);
-    expect(find.text('Your campus day'), findsOneWidget);
+    expect(find.textContaining('Avery'), findsOneWidget);
+    expect(find.text('Jump back in'), findsOneWidget);
     expect(find.text("Today's timetable"), findsOneWidget);
-    expect(find.text('Attendance summary'), findsOneWidget);
+    expect(find.text('Schedule and attendance'), findsOneWidget);
+    expect(find.text('Campus feed'), findsOneWidget);
     expect(find.text('Feed'), findsNothing);
     expect(find.text('Chat'), findsNothing);
   });
@@ -46,13 +47,10 @@ void main() {
       ),
     );
 
-    expect(find.text('Teaching overview'), findsOneWidget);
+    expect(find.text('Jump back into teaching'), findsOneWidget);
     expect(find.text("Today's classes"), findsOneWidget);
-    expect(find.text('Attendance workspace'), findsOneWidget);
-    expect(
-      find.text('Record attendance through the verified class workflow.'),
-      findsOneWidget,
-    );
+    expect(find.text('Classes and rosters'), findsOneWidget);
+    expect(find.text('Campus feed'), findsOneWidget);
   });
 }
 

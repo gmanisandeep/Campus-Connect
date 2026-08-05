@@ -25,48 +25,22 @@ class CcSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final ccTheme = context.ccTheme;
     final radius = borderRadius ?? BorderRadius.circular(CcRadius.card);
-    final isGlass = variant == CcSurfaceVariant.glass;
     final color = switch (variant) {
       CcSurfaceVariant.base => ccTheme.surface,
       CcSurfaceVariant.raised => ccTheme.raisedSurface,
-      CcSurfaceVariant.glass => null,
+      CcSurfaceVariant.glass => ccTheme.glassSurface,
       CcSurfaceVariant.outlined => Colors.transparent,
     };
-    final gradient = isGlass
-        ? LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.alphaBlend(
-                ccTheme.glowCyan.withValues(alpha: 0.09),
-                ccTheme.glassSurface,
-              ),
-              Color.alphaBlend(
-                ccTheme.glowPrimary.withValues(alpha: 0.05),
-                ccTheme.glassSurface,
-              ),
-              ccTheme.glassSurface,
-            ],
-            stops: const [0, 0.42, 1],
-          )
-        : null;
-    final showBorder = variant != CcSurfaceVariant.raised;
-    final borderColor = isGlass
-        ? Color.alphaBlend(
-            ccTheme.borderActive.withValues(alpha: 0.22),
-            ccTheme.borderSubtle,
-          )
-        : ccTheme.borderSubtle;
-    final shadows = variant == CcSurfaceVariant.raised || isGlass
+    final showBorder = variant == CcSurfaceVariant.outlined;
+    final shadows = variant == CcSurfaceVariant.raised
         ? ccTheme.cardShadow
         : const <BoxShadow>[];
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: color,
-        gradient: gradient,
         borderRadius: radius,
-        border: showBorder ? Border.all(color: borderColor) : null,
+        border: showBorder ? Border.all(color: ccTheme.borderSubtle) : null,
         boxShadow: shadows,
       ),
       child: ClipRRect(

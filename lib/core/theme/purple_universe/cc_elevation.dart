@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 abstract final class CcElevation {
   static const quietDark = [
-    BoxShadow(color: Color(0x52000000), blurRadius: 18, offset: Offset(0, 8)),
+    BoxShadow(color: Color(0x26000000), blurRadius: 12, offset: Offset(0, 4)),
   ];
 
   static const quietLight = [
-    BoxShadow(color: Color(0x1F312458), blurRadius: 20, offset: Offset(0, 8)),
+    BoxShadow(color: Color(0x14312458), blurRadius: 12, offset: Offset(0, 4)),
   ];
 
   static const focal = [
@@ -31,7 +31,7 @@ abstract final class CcElevation {
     spreadRadius: -3,
   );
 
-  static const subtleDarkBorder = Color(0x38C7B8FF);
-  static const subtleLightBorder = Color(0x246D35D7);
+  static const subtleDarkBorder = Color(0xFF2E2E32);
+  static const subtleLightBorder = Color(0xFFE1E1E5);
   static const activeBorder = CcColors.electricPurple;
 }

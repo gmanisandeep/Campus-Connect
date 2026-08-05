@@ -5,9 +5,7 @@ import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_data_display.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_feedback.dart';
-import 'package:campus_connect/core/widgets/purple_universe/cc_pulse.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_surface.dart';
-import 'package:campus_connect/core/widgets/status_badge.dart';
 import 'package:campus_connect/features/academics/domain/academic_access.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,23 +26,23 @@ class HomePage extends ConsumerWidget {
         config.hasBackendConfiguration &&
         !config.enableDemoSession &&
         canViewAcademics(session.activeGrant);
+    final socialAvailable =
+        config.hasBackendConfiguration && !config.enableDemoSession;
 
     return CustomScrollView(
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(
             CcSpacing.md,
-            CcSpacing.xl,
+            CcSpacing.lg,
             CcSpacing.md,
             CcSpacing.lg,
           ),
           sliver: SliverToBoxAdapter(
-            child: CcReveal(
-              child: _HomeHero(
-                displayName: session.displayName,
-                role: role,
-                academicsAvailable: academicsAvailable,
-              ),
+            child: _HomeHeader(
+              displayName: session.displayName,
+              role: role,
+              institutionName: session.activeGrant?.institutionName,
             ),
           ),
         ),
@@ -59,103 +57,83 @@ class HomePage extends ConsumerWidget {
             children: [
               CcSectionHeader(
                 title: isFaculty
-                    ? 'Teaching overview'
+                    ? 'Jump back into teaching'
                     : isAlumni
                     ? 'Your alumni access'
-                    : 'Your campus day',
-                supportingText: academicsAvailable
-                    ? isStudent
-                          ? 'Open the authoritative timetable and attendance '
-                                'information available to your account.'
-                          : 'Open assigned classes, rosters, and attendance '
-                                'tools for your verified faculty access.'
-                    : isAlumni
-                    ? 'Your completed programme is verified. Alumni services '
-                          'will appear only when your college enables them.'
-                    : 'Only modules enabled for your verified role appear here.',
+                    : 'Jump back in',
+                supportingText: isAlumni
+                    ? 'Your completed programme is verified. Alumni services appear when your college enables them.'
+                    : null,
               ),
               const SizedBox(height: CcSpacing.md),
-              if (academicsAvailable)
-                CcSurface(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    children: [
-                      _HomeActionRow(
-                        icon: Icons.calendar_month_outlined,
-                        title: isStudent
-                            ? "Today's timetable"
-                            : "Today's classes",
-                        description: isStudent
-                            ? 'View the live schedule returned by your campus.'
-                            : 'View assigned classes and their current rosters.',
-                        onTap: () => context.go('/academics'),
-                      ),
-                      const Divider(),
-                      _HomeActionRow(
-                        icon: Icons.fact_check_outlined,
-                        title: isStudent
-                            ? 'Attendance summary'
-                            : 'Attendance workspace',
-                        description: isStudent
-                            ? 'Review the attendance totals supplied for your '
-                                  'subjects.'
-                            : session.can(AppPermission.attendanceRecord)
-                            ? 'Record attendance through the verified class '
-                                  'workflow.'
-                            : 'Review assigned class rosters in read-only mode.',
-                        onTap: () => context.go('/academics'),
-                      ),
-                    ],
-                  ),
+              if (academicsAvailable || socialAvailable)
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final stack =
+                        constraints.maxWidth < 520 ||
+                        MediaQuery.textScalerOf(context).scale(1) > 1.3;
+                    final width = stack
+                        ? constraints.maxWidth
+                        : (constraints.maxWidth - CcSpacing.sm) / 2;
+                    return Wrap(
+                      spacing: CcSpacing.sm,
+                      runSpacing: CcSpacing.sm,
+                      children: [
+                        if (academicsAvailable)
+                          SizedBox(
+                            width: width,
+                            child: _HomeShortcut(
+                              icon: Icons.calendar_month_rounded,
+                              title: isStudent
+                                  ? "Today's timetable"
+                                  : "Today's classes",
+                              description: isStudent
+                                  ? 'Schedule and attendance'
+                                  : 'Classes and rosters',
+                              onTap: () => context.go('/academics'),
+                            ),
+                          ),
+                        if (socialAvailable)
+                          SizedBox(
+                            width: width,
+                            child: _HomeShortcut(
+                              icon: Icons.forum_rounded,
+                              title: 'Campus feed',
+                              description: 'Posts and conversations',
+                              onTap: () => context.go('/social'),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 )
               else
                 const CcInlineMessage(
                   message:
-                      'No additional modules are enabled for this access yet. '
-                      'Your institution controls which verified tools appear.',
+                      'No additional modules are enabled for this access yet. Your institution controls which verified tools appear.',
                   tone: CcMessageTone.info,
                 ),
               const SizedBox(height: CcSpacing.xl),
-              const CcSectionHeader(title: 'Access status'),
+              const CcSectionHeader(title: 'Campus access'),
               const SizedBox(height: CcSpacing.md),
               CcSurface(
-                variant: CcSurfaceVariant.glass,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CcIconTile(
-                      icon: Icons.verified_user_outlined,
-                      semanticLabel: 'Verified campus identity',
-                    ),
-                    const SizedBox(width: CcSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            session.activeGrant?.institutionName ??
-                                'Campus access',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: CcSpacing.xxs),
-                          Text(
-                            isFaculty
-                                ? 'Faculty permissions are applied to every '
-                                      'available action.'
-                                : isAlumni
-                                ? 'Alumni access confirms your completed '
-                                      'programme without active Student tools.'
-                                : 'Your active membership determines the data '
-                                      'and tools you can open.',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: context.ccTheme.textSecondary,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                padding: EdgeInsets.zero,
+                child: ListTile(
+                  minTileHeight: 76,
+                  leading: const CcIconTile(
+                    icon: Icons.verified_user_outlined,
+                    semanticLabel: 'Verified campus identity',
+                  ),
+                  title: Text(
+                    session.activeGrant?.institutionName ?? 'Campus access',
+                  ),
+                  subtitle: Text(
+                    isFaculty
+                        ? 'Faculty permissions apply to every available action.'
+                        : isAlumni
+                        ? 'Verified graduate · Alumni access'
+                        : 'Your membership controls the tools and data you can open.',
+                  ),
                 ),
               ),
             ],
@@ -166,75 +144,80 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-class _HomeHero extends StatelessWidget {
-  const _HomeHero({
+class _HomeHeader extends StatelessWidget {
+  const _HomeHeader({
     required this.displayName,
     required this.role,
-    required this.academicsAvailable,
+    required this.institutionName,
   });
 
   final String? displayName;
   final AppRole? role;
-  final bool academicsAvailable;
+  final String? institutionName;
 
   @override
   Widget build(BuildContext context) {
-    final roleLabel = role?.label ?? 'Campus';
+    final roleLabel = role?.label ?? 'Member';
     final name = displayName?.trim();
-    final title = name == null || name.isEmpty
-        ? '$roleLabel home'
-        : 'Hello, $name';
+    final firstName = name == null || name.isEmpty
+        ? null
+        : name.split(RegExp(r'\s+')).first;
+    final hour = DateTime.now().hour;
+    final greeting = hour < 12
+        ? 'Good morning'
+        : hour < 17
+        ? 'Good afternoon'
+        : 'Good evening';
+    final title = firstName == null ? greeting : '$greeting, $firstName';
 
-    return CcSpotlightSurface(
-      prominent: true,
-      semanticLabel: '$title. $roleLabel identity connected.',
-      child: Semantics(
-        container: true,
-        header: true,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CcIconTile(
-              icon: switch (role) {
-                AppRole.student => Icons.school_rounded,
-                AppRole.faculty => Icons.co_present_rounded,
-                AppRole.alumni => Icons.workspace_premium_rounded,
-                _ => Icons.hub_rounded,
-              },
-              semanticLabel: '$roleLabel workspace',
-            ),
-            const SizedBox(width: CcSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const StatusBadge(
-                    label: 'Identity connected',
-                    status: AppStatus.success,
-                  ),
-                  const SizedBox(height: CcSpacing.md),
-                  Text(title, style: Theme.of(context).textTheme.displaySmall),
-                  const SizedBox(height: CcSpacing.sm),
-                  Text(
-                    academicsAvailable
-                        ? 'Your verified $roleLabel access is live. Pick up where your campus day left off.'
-                        : 'Your campus identity is live. Institution-enabled tools appear as soon as access is granted.',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: context.ccTheme.textSecondary,
-                    ),
-                  ),
-                ],
+    return Semantics(
+      container: true,
+      header: true,
+      label: '$title. $roleLabel at ${institutionName ?? 'CampusConnect'}.',
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 26,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            child: Text(
+              firstName?.characters.first.toUpperCase() ?? 'C',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: CcSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.headlineMedium),
+                const SizedBox(height: CcSpacing.xxs),
+                Text(
+                  '$roleLabel workspace',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: context.ccTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Open profile',
+            onPressed: () => context.go('/profile'),
+            icon: const Icon(Icons.settings_outlined),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _HomeActionRow extends StatelessWidget {
-  const _HomeActionRow({
+class _HomeShortcut extends StatelessWidget {
+  const _HomeShortcut({
     required this.icon,
     required this.title,
     required this.description,
@@ -247,19 +230,33 @@ class _HomeActionRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => ListTile(
-    minVerticalPadding: CcSpacing.md,
-    contentPadding: const EdgeInsets.symmetric(
-      horizontal: CcSpacing.md,
-      vertical: CcSpacing.xs,
+  Widget build(BuildContext context) => CcSurface(
+    padding: EdgeInsets.zero,
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Padding(
+        padding: const EdgeInsets.all(CcSpacing.md),
+        child: Row(
+          children: [
+            CcIconTile(icon: icon, semanticLabel: title),
+            const SizedBox(width: CcSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: CcSpacing.xxs),
+                  Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
-    leading: CcIconTile(icon: icon),
-    title: Text(title),
-    subtitle: Padding(
-      padding: const EdgeInsets.only(top: CcSpacing.xxs),
-      child: Text(description),
-    ),
-    trailing: const Icon(Icons.arrow_forward_rounded),
-    onTap: onTap,
   );
 }

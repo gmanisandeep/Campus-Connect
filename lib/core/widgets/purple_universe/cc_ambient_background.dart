@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 
 enum CcAmbientTone { immersive, calm, quiet }
 
-/// Shared visual contract for the CampusConnect aurora world.
-///
-/// Aesthetic: cinematic campus utility, not a marketing mockup.
-/// Palette: deep ink or pearl foundations with one violet-to-cyan light field.
-/// Depth: opaque task surfaces above atmospheric, non-interactive lighting.
-/// Typography: the platform sans with editorial scale only in hero moments.
-/// Motion: static by default; state motion remains short and reduced-motion safe.
+/// A quiet native foundation with one optional brand wash near the top edge.
 class CcAmbientBackground extends StatelessWidget {
   const CcAmbientBackground({
     required this.child,
@@ -77,62 +71,16 @@ class _CcAuroraPainter extends CustomPainter {
       CcAmbientTone.calm => 0.68,
       CcAmbientTone.quiet => 0.34,
     };
-    final primaryAlpha = (isDark ? 0.50 : 0.28) * strength;
-    final secondaryAlpha = (isDark ? 0.30 : 0.34) * strength;
+    if (tone == CcAmbientTone.quiet) return;
+
+    final primaryAlpha = (isDark ? 0.18 : 0.12) * strength;
 
     _drawGlow(
       canvas,
-      center: Offset(size.width * 0.86, size.height * 0.08),
-      radius: size.longestSide * 0.58,
+      center: Offset(size.width * 0.72, -size.height * 0.10),
+      radius: size.longestSide * 0.42,
       color: primary.withValues(alpha: primaryAlpha),
     );
-    _drawGlow(
-      canvas,
-      center: Offset(size.width * 0.08, size.height * 0.84),
-      radius: size.longestSide * 0.48,
-      color: secondary.withValues(alpha: secondaryAlpha),
-    );
-
-    if (tone != CcAmbientTone.quiet) {
-      final ribbon = Path()
-        ..moveTo(-size.width * 0.10, size.height * 0.70)
-        ..cubicTo(
-          size.width * 0.20,
-          size.height * 0.52,
-          size.width * 0.36,
-          size.height * 0.78,
-          size.width * 0.62,
-          size.height * 0.56,
-        )
-        ..cubicTo(
-          size.width * 0.80,
-          size.height * 0.42,
-          size.width * 0.94,
-          size.height * 0.49,
-          size.width * 1.10,
-          size.height * 0.34,
-        );
-      final ribbonBounds = Rect.fromLTWH(
-        0,
-        size.height * 0.30,
-        size.width,
-        size.height * 0.50,
-      );
-      canvas.drawPath(
-        ribbon,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = tone == CcAmbientTone.immersive ? 1.4 : 1
-          ..shader = LinearGradient(
-            colors: [
-              secondary.withValues(alpha: 0),
-              secondary.withValues(alpha: 0.32 * strength),
-              primary.withValues(alpha: 0.44 * strength),
-              primary.withValues(alpha: 0),
-            ],
-          ).createShader(ribbonBounds),
-      );
-    }
   }
 
   void _drawGlow(

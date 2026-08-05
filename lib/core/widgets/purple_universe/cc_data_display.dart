@@ -11,7 +11,7 @@ class CcBrandLockup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final markSize = compact ? 36.0 : 44.0;
+    final markSize = compact ? 36.0 : 42.0;
 
     return Semantics(
       label: 'CampusConnect',
@@ -27,14 +27,13 @@ class CcBrandLockup extends StatelessWidget {
               height: markSize,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(CcRadius.control),
-                border: Border.all(color: context.ccTheme.borderActive),
-                color: theme.colorScheme.primary.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(CcRadius.capsule),
+                color: theme.colorScheme.primary,
               ),
               child: Icon(
                 Icons.hub_rounded,
                 size: compact ? 20 : 24,
-                color: theme.colorScheme.primary,
+                color: theme.colorScheme.onPrimary,
               ),
             ),
             Text(
