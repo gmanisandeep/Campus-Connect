@@ -67,23 +67,25 @@ These instructions apply to the entire repository.
 - If a gate fails, fix and rerun it before committing. Record tool or
   environment blockers separately from product failures.
 
-## Purple Universe design discipline
+## Campus Sky design discipline
 
-- Follow `docs/PURPLE_UNIVERSE_DESIGN_SYSTEM.md`,
-  `docs/MOTION_SYSTEM.md`, and `docs/VISUAL_PERFORMANCE_BUDGET.md`.
+- Follow root `DESIGN.md`, `docs/MOTION_SYSTEM.md`, and
+  `docs/VISUAL_PERFORMANCE_BUDGET.md`. The legacy
+  `purple_universe` source namespace remains compatibility-only.
 - Use semantic tokens and reusable CampusConnect components; do not scatter
   literal colors, gradients, radii, durations, or shadows through features.
-- Keep the visual language calm, premium, original, and useful: midnight
-  foundations, selective violet/cyan light, restrained glass, strong
-  typography, and the Campus Flow motif.
+- Keep the visual language bright, social, original, and useful: pale sky
+  atmosphere, floating white surfaces, decisive black typography, a single
+  `#498ACA` ownership accent, and image-led content.
 - Do not turn every surface into glass, every control into a gradient, or every
-  transition into a spectacle. Preserve hierarchy and long-term daily
-  usability.
+  transition into a spectacle. Reserve the glossy orbit treatment for the
+  five-item mobile creation action.
 - Pause or remove continuous visual work when offscreen. Respect reduced motion
   and quality fallbacks. Expensive blur, shaders, and painters require measured
   evidence on the Galaxy A35 before broad use.
-- Maintain both dark and light themes. Light mode uses pearl/lavender surfaces,
-  dark-indigo text, and controlled spectral accents rather than plain white.
+- Maintain both dark and light themes. Light mode is the primary Campus Sky
+  expression; dark mode maps the same roles to deep navy without returning to
+  purple wallpaper.
 
 ## Accessibility and performance
 

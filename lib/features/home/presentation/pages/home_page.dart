@@ -1,6 +1,9 @@
 import 'package:campus_connect/core/auth/app_role.dart';
 import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/configuration/providers.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_colors.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_gradients.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_radius.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_data_display.dart';
@@ -90,6 +93,8 @@ class HomePage extends ConsumerWidget {
                               description: isStudent
                                   ? 'Schedule and attendance'
                                   : 'Classes and rosters',
+                              accent: CcColors.softLilac,
+                              iconColor: CcColors.royalBlue,
                               onTap: () => context.go('/academics'),
                             ),
                           ),
@@ -100,6 +105,8 @@ class HomePage extends ConsumerWidget {
                               icon: Icons.forum_rounded,
                               title: 'Campus feed',
                               description: 'Posts and conversations',
+                              accent: CcColors.softCoral,
+                              iconColor: CcColors.nebulaPink,
                               onTap: () => context.go('/social'),
                             ),
                           ),
@@ -176,14 +183,20 @@ class _HomeHeader extends StatelessWidget {
       label: '$title. $roleLabel at ${institutionName ?? 'CampusConnect'}.',
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 26,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          Container(
+            width: 54,
+            height: 54,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: CcGradients.orbitBlue,
+              border: Border.all(color: Colors.white, width: 3),
+            ),
             child: Text(
               firstName?.characters.first.toUpperCase() ?? 'C',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
@@ -205,10 +218,10 @@ class _HomeHeader extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
+          IconButton.filledTonal(
             tooltip: 'Open profile',
             onPressed: () => context.go('/profile'),
-            icon: const Icon(Icons.settings_outlined),
+            icon: const Icon(Icons.person_outline_rounded),
           ),
         ],
       ),
@@ -221,12 +234,16 @@ class _HomeShortcut extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.accent,
+    required this.iconColor,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final Color accent;
+  final Color iconColor;
   final VoidCallback onTap;
 
   @override
@@ -234,24 +251,25 @@ class _HomeShortcut extends StatelessWidget {
     padding: EdgeInsets.zero,
     child: InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(CcRadius.card),
       child: Padding(
-        padding: const EdgeInsets.all(CcSpacing.md),
-        child: Row(
+        padding: const EdgeInsets.all(CcSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CcIconTile(icon: icon, semanticLabel: title),
-            const SizedBox(width: CcSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: CcSpacing.xxs),
-                  Text(
-                    description,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
+            CcIconTile(
+              icon: icon,
+              semanticLabel: title,
+              backgroundColor: accent,
+              foregroundColor: iconColor,
+            ),
+            const SizedBox(height: CcSpacing.lg),
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: CcSpacing.xxs),
+            Text(
+              description,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: context.ccTheme.textSecondary,
               ),
             ),
           ],

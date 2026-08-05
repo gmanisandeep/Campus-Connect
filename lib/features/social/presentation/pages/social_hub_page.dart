@@ -218,9 +218,11 @@ List<Widget> _feedSlivers(
             padding: const EdgeInsets.only(bottom: CcSpacing.xl),
             sliver: SliverList.separated(
               itemCount: posts.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) =>
-                  _SocialPostCard(post: posts[index]),
+              separatorBuilder: (_, __) => const SizedBox(height: CcSpacing.md),
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: CcSpacing.md),
+                child: _SocialPostCard(post: posts[index]),
+              ),
             ),
           ),
         ],
@@ -237,7 +239,7 @@ class _SocialPostCard extends ConsumerWidget {
     return CcSurface(
       key: ValueKey(post.id),
       padding: EdgeInsets.zero,
-      borderRadius: BorderRadius.zero,
+      borderRadius: BorderRadius.circular(CcRadius.card),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1720,24 +1722,21 @@ class _SocialTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: context.ccTheme.canvas,
-      border: Border(bottom: BorderSide(color: context.ccTheme.borderSubtle)),
-    ),
+    decoration: const BoxDecoration(color: Colors.transparent),
     child: Padding(
       padding: const EdgeInsets.fromLTRB(
         CcSpacing.md,
-        CcSpacing.sm,
-        CcSpacing.xs,
-        CcSpacing.sm,
+        CcSpacing.lg,
+        CcSpacing.md,
+        CcSpacing.md,
       ),
       child: Row(
         children: [
           const Expanded(child: CcBrandLockup(compact: true)),
-          IconButton(
+          IconButton.filled(
             tooltip: 'Create post',
             onPressed: onCreate,
-            icon: const Icon(Icons.add_box_outlined),
+            icon: const Icon(Icons.add_rounded),
           ),
         ],
       ),

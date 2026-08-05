@@ -32,9 +32,11 @@ class CcSurface extends StatelessWidget {
       CcSurfaceVariant.outlined => Colors.transparent,
     };
     final showBorder = variant == CcSurfaceVariant.outlined;
-    final shadows = variant == CcSurfaceVariant.raised
-        ? ccTheme.cardShadow
-        : const <BoxShadow>[];
+    final shadows = switch (variant) {
+      CcSurfaceVariant.base || CcSurfaceVariant.raised => ccTheme.cardShadow,
+      CcSurfaceVariant.glass ||
+      CcSurfaceVariant.outlined => const <BoxShadow>[],
+    };
 
     return DecoratedBox(
       decoration: BoxDecoration(

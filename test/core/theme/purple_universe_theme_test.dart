@@ -15,14 +15,14 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Purple Universe foundations', () {
     test('exposes the approved core palette and gradient stops', () {
-      expect(CcColors.voidDark, const Color(0xFF070708));
-      expect(CcColors.electricPurple, const Color(0xFFA970FF));
-      expect(CcColors.neonCyan, const Color(0xFF36E4FF));
-      expect(CcColors.pearlCanvas, const Color(0xFFF7F7F8));
+      expect(CcColors.voidDark, const Color(0xFF07131E));
+      expect(CcColors.electricPurple, const Color(0xFF65B8EA));
+      expect(CcColors.neonCyan, const Color(0xFF7DDBF4));
+      expect(CcColors.pearlCanvas, const Color(0xFFE9F7FF));
       expect(CcGradients.purpleCore.colors, const [
-        Color(0xFF5B21B6),
-        Color(0xFF7C3AED),
-        Color(0xFFA855F7),
+        Color(0xFF2876B8),
+        Color(0xFF498ACA),
+        Color(0xFF73CEF4),
       ]);
     });
 
@@ -60,8 +60,8 @@ void main() {
 
       expect(dark.brightness, Brightness.dark);
       expect(dark.scaffoldBackgroundColor, CcColors.spaceBlack);
-      expect(dark.colorScheme.primary, CcColors.electricPurple);
-      expect(dark.colorScheme.secondary, CcColors.neonCyan);
+      expect(dark.colorScheme.primary, CcColors.skyBright);
+      expect(dark.colorScheme.secondary, CcColors.skyBlue);
       expect(dark.colorScheme.onSurface, CcColors.starWhite);
       expect(dark.colorScheme.surfaceDim, CcColors.voidDark);
       expect(dark.textTheme.displayMedium?.fontSize, 34);

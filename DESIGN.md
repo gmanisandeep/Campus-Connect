@@ -1,103 +1,221 @@
-# CampusConnect design contract
+---
+name: CampusConnect
+description: A bright, image-led campus social utility with verified academic access.
+colors:
+  sky-blue: "#498ACA"
+  sky-bright: "#69C5F2"
+  sky-canvas: "#E9F7FF"
+  sky-mist: "#DDF3FF"
+  cloud-surface: "#FFFFFF"
+  ink-black: "#010304"
+  secondary-ink: "#344B5A"
+  muted-ink: "#607A8B"
+  coral: "#E9577B"
+  coral-soft: "#FFE3E8"
+  lilac-soft: "#E9E0FF"
+typography:
+  display:
+    fontFamily: "system-ui, sans-serif"
+    fontSize: "44px"
+    fontWeight: 700
+    lineHeight: 1.08
+    letterSpacing: "-1.1px"
+  headline:
+    fontFamily: "system-ui, sans-serif"
+    fontSize: "28px"
+    fontWeight: 700
+    lineHeight: 1.18
+  title:
+    fontFamily: "system-ui, sans-serif"
+    fontSize: "20px"
+    fontWeight: 600
+    lineHeight: 1.25
+  body:
+    fontFamily: "system-ui, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: 1.5
+  label:
+    fontFamily: "system-ui, sans-serif"
+    fontSize: "14px"
+    fontWeight: 600
+    lineHeight: 1.3
+rounded:
+  compact: "8px"
+  control: "16px"
+  card: "24px"
+  prominent: "30px"
+  capsule: "999px"
+spacing:
+  xxs: "4px"
+  xs: "8px"
+  sm: "12px"
+  md: "16px"
+  lg: "24px"
+  xl: "32px"
+  xxl: "40px"
+  hero: "64px"
+components:
+  button-primary:
+    backgroundColor: "{colors.ink-black}"
+    textColor: "{colors.cloud-surface}"
+    rounded: "{rounded.capsule}"
+    height: "48px"
+    padding: "12px 24px"
+  card:
+    backgroundColor: "{colors.cloud-surface}"
+    textColor: "{colors.ink-black}"
+    rounded: "{rounded.card}"
+    padding: "24px"
+  chip-default:
+    backgroundColor: "{colors.cloud-surface}"
+    textColor: "{colors.ink-black}"
+    rounded: "{rounded.capsule}"
+    height: "42px"
+  chip-selected:
+    backgroundColor: "{colors.ink-black}"
+    textColor: "{colors.cloud-surface}"
+    rounded: "{rounded.capsule}"
+    height: "42px"
+---
 
-CampusConnect uses **Campus Native**: a fast, content-first interface that
-feels like a daily social utility rather than an institutional dashboard.
-Identity is confident but quiet—near-black or soft-neutral foundations, one
-clear violet accent, native controls, dense readable lists, and media/content
-allowed to lead. The product should feel immediately learnable to people who
-already use modern social, music, and messaging apps without copying any one
-brand.
+# Design System: CampusConnect
 
-The existing `purple_universe` source namespace remains for compatibility. Its
-semantic tokens now implement Campus Native; new feature code must consume the
-tokens rather than the legacy namespace name.
+## Overview
 
-## Thesis
+**Creative North Star: "Campus Sky"**
 
-- The user’s reason for opening the app appears before atmosphere or brand
-  theatre.
-- Familiar destinations stay at the thumb edge. Filters stay beside the
-  content they control. Creation and messaging remain one gesture away.
-- Academic authority remains explicit, but it does not make social access feel
-  like a locked portal.
-- Violet signals CampusConnect ownership and active state. It is not wallpaper.
+Campus Sky is a bright social utility, not an institutional dashboard. A pale
+blue atmosphere gives white content surfaces air, while decisive black type and
+controls keep everyday actions fast and legible. The supplied reference informs
+the openness, floating geometry, compact pills, and circular creation gesture;
+its dating content, branding, people, and assets are outside this system.
 
-## Source of truth
+Social content and people create the visual energy. Academic authority remains
+explicit and sober without turning the rest of CampusConnect into a portal.
 
-- `lib/core/theme/app_theme.dart` composes Material 3 light and dark themes.
-- `cc_colors.dart`, `cc_theme_extension.dart`, and `cc_gradients.dart` own all
-  semantic color and surface roles.
-- `cc_typography.dart`, `cc_spacing.dart`, and `cc_radius.dart` own hierarchy,
-  rhythm, and geometry.
-- `cc_motion.dart` owns short state transitions. Presentation never delays or
-  commits business state.
+**Key Characteristics:**
 
-## Visual grammar
+- Light-first sky atmosphere with crisp white surfaces.
+- Bold near-black hierarchy with one recognizable blue identity.
+- Image-led social cards and a raised circular creation action.
+- Truthful access, role, institution, and verification states.
 
-- Dark mode uses near-black canvas, charcoal surfaces, high-contrast text, and
-  violet active states. Light mode uses soft neutral canvas and white surfaces.
-- Prefer flat surfaces and separators. Use elevation only for modal or raised
-  focus; use no scrolling glass, glow, spotlight, or decorative animation.
-- Cards group shortcuts or exceptional states. Feeds and conversations are
-  edge-to-edge lists with content padding inside the row.
-- Use circular avatars for identity, rounded rectangles for grouped utility,
-  capsules for buttons and filters, and unframed icons for navigation.
-- Headlines are compact and operational. Do not place a marketing hero inside
-  an authenticated daily-use screen.
+## Colors
 
-## Shared components
+The palette combines an open blue field, paper-white content, decisive black,
+and rare coral/lilac support accents.
 
-- `CcAmbientBackground` is a neutral foundation. Phone and authenticated quiet
-  surfaces are effectively solid; wide authentication may use one faint top
-  brand wash.
-- `CcSurface` supplies flat base, raised, translucent-solid compatibility, and
-  outline variants—never backdrop blur.
-- `CcPrimaryButton` and `CcSecondaryButton` use capsule geometry and bounded
-  press feedback without glow.
-- `CcNavigationBar` sits flush to the bottom screen edge with a divider and
-  clear active icon/label. `CcNavigationRail` is the equivalent desktop edge.
-- `CcBrandLockup`, `CcIconTile`, `CcSectionHeader`, and `CcInlineMessage` carry
-  the same identity and semantic-state rules across roles.
+### Primary
 
-## Screen patterns
+- **Campus Sky:** Owns identity, links, active navigation, and the creation orbit.
+- **Sky Bright:** Supplies highlights inside the orbit and dark-theme primary states.
 
-- **Authentication:** compact brand, direct form, visible sign-up recovery, and
-  no oversized mobile marketing copy. Wide screens may pair the form with a
-  restrained product statement.
-- **Home:** time-aware greeting and identity, then real “jump back in” shortcuts
-  derived from backend configuration and active permissions.
-- **Social:** stable top brand/action bar, one-tap feed filters, edge-to-edge
-  posts, immediate engagement actions, and bottom navigation.
-- **Messages:** requests are separated from accepted conversations. Threads use
-  dense avatar rows; conversations use compact directional bubbles and a
-  persistent composer.
-- **Academics and college console:** calmer dense utility, explicit authority,
-  clear state text, and no social decoration.
+### Secondary
 
-## Accessibility and adaptation
+- **Warm Coral:** Calls attention to social/community shortcuts without competing
+  with the brand blue.
+- **Soft Lilac:** Separates academic utility from social utility in icon tiles.
 
-- Interactive targets are at least 44 logical pixels and preferably 48.
-- Support light/dark themes, TalkBack labels, keyboard navigation, logical
-  focus order, and 1.0x, 1.3x, and 2.0x text scaling.
-- Content may wrap, stack, or scroll; it must never clip or hide an action.
-- Normal text contrast is at least 4.5:1; large text and controls are at least
-  3:1. Status is never color-only.
-- Reduced motion retains identical information with immediate state changes.
+### Neutral
 
-## Galaxy A35 performance contract
+- **Cloud Surface:** Holds cards, navigation trays, filters, and raised controls.
+- **Ink Black:** Owns primary text and decisive light-theme actions.
+- **Secondary Ink and Muted Ink:** Carry supporting copy and quiet metadata.
 
-- Target the 60 Hz frame budget. There is no continuous decorative motion.
-- Avoid full-screen blur, nested clips, shader stacks, scroll-linked effects,
-  and broad repaint regions.
-- Size and decode user media for its rendered bounds; stop hidden video work.
-- Unmeasured physical performance remains `unknown`, never an assumed pass.
+**The Blue Ownership Rule.** Blue signals CampusConnect identity or active
+state; it is not applied to every surface.
 
-## Non-negotiable anti-patterns
+## Typography
 
-- No fake records, counts, destinations, colleges, or recommendations.
-- No UI that bypasses authorization, attendance, offline-draft, repository, or
-  server-authority contracts.
-- No oversized authenticated hero, floating glass dock, spotlight card, neon
-  body copy, gradient on every action, or decoration on every surface.
-- No unfinished production tab, fixed text height, hidden focus, or unreachable
-  action at 200% text.
+**Display Font:** Platform system sans-serif
+
+**Body Font:** Platform system sans-serif
+
+**Character:** Familiar mobile typography with bold editorial hierarchy and
+compact labels. No decorative font competes with posts, profiles, or records.
+
+### Hierarchy
+
+- **Display** (700, 44px, 1.08): rare public/authentication statements.
+- **Headline** (700, 22–28px, 1.18–1.22): screen and major section titles.
+- **Title** (600, 15–20px, 1.25–1.35): cards, rows, names, and modules.
+- **Body** (400, 14–16px, 1.48–1.50): post copy, explanations, and records.
+- **Label** (600, 11–14px, 1.30–1.35): filters, buttons, status, and metadata.
+
+**The Content Voice Rule.** Strong weight establishes hierarchy; gradients,
+outlines, and all-caps decoration never substitute for hierarchy.
+
+## Layout
+
+Phone layouts use 16px horizontal gutters, bottom navigation, and a 4/8/12/16/
+24/32/40/64 spacing rhythm. White cards float within the sky canvas rather than
+touching every edge. Five-destination navigation elevates the middle creation
+action. Wide layouts exchange the bottom tray for a navigation rail, center the
+working area, and cap it at 1200px; dense academic views may use that width while
+social reading columns remain visually contained by their cards.
+
+## Elevation & Depth
+
+Depth is ambient and blue-tinted. Ordinary light surfaces use one soft shadow
+(`0 8px 20px rgba(40,101,137,0.12)`); the creation orbit uses a tighter blue
+shadow (`0 7px 18px rgba(30,120,180,0.30)`). Cards do not combine an ordinary
+border, tint, and shadow. Full-screen blur, glow stacks, and continuous shader
+effects are outside the system.
+
+**The One-Lift Rule.** A normal surface gets one depth device; reserve the
+stronger orbit shadow for the central creation action.
+
+## Shapes
+
+Controls use 16px corners, cards use 24px, focal panels use 30px, and filters or
+buttons use capsules. Avatars and the central creation action are circular. The
+orbit's nested circle is the signature silhouette; it must not spread to every
+icon.
+
+## Components
+
+### Buttons
+
+- **Shape:** Capsule, 48px minimum height.
+- **Primary:** Black with white text in light mode; the relationship reverses in dark mode.
+- **Focus:** Visible boundary/focus state with no glow-heavy animation.
+
+### Chips
+
+- **Style:** Small white capsules with black text and no ordinary border.
+- **State:** Selected filters invert to black with white text.
+
+### Cards / Containers
+
+- **Corner Style:** Airy 24px radius; prominent panels may use 30px.
+- **Background:** White in light mode, raised navy in dark mode.
+- **Shadow Strategy:** One ambient blue-tinted elevation role.
+- **Internal Padding:** Usually 16px or 24px.
+
+### Inputs / Fields
+
+- **Style:** Filled semantic surface, 16px corners, and a contrast-safe boundary.
+- **Focus:** Blue focus treatment; errors remain explicit text, never color-only.
+
+### Navigation
+
+Mobile navigation is a clean white tray. With exactly five destinations, the
+middle creation action becomes a 52px glossy blue orbit with a dark inner core.
+Desktop uses a quieter rail and never imitates the phone orbit.
+
+## Do's and Don'ts
+
+### Do:
+
+- **Do** let real people, posts, and campus media supply visual energy.
+- **Do** preserve 44px minimum targets, readable contrast, wrapping, and 200% text access.
+- **Do** show institution, role, access, and verification only from server authority.
+- **Do** keep academic and college-console screens calmer than the social feed.
+
+### Don't:
+
+- **Don't** copy the reference's dating copy, photography, branding, or fake data.
+- **Don't** return to purple wallpaper, scrolling glass, neon body text, or gradients everywhere.
+- **Don't** invent colleges, counts, recommendations, posts, or verification badges.
+- **Don't** let presentation bypass authentication, attendance, repository, or authorization contracts.

@@ -313,6 +313,28 @@ This is not the complete Phase 3 experience: full profile work, week/detail/cale
 
 This is not the complete Phase 4 experience: reference-data caching, attendance history, risk evaluation, configurable thresholds, adjustments, audit-event persistence, export, and general synchronization observability are not implemented.
 
+### Campus Sky reference-led refresh
+
+- The supplied sky-blue mobile reference now informs a new **Campus Sky**
+  visual contract: light-first blue atmosphere, floating white cards, decisive
+  black typography/actions, compact inverted filter pills, and a raised glossy
+  blue creation action in five-item mobile navigation. The dating brand,
+  photography, copy, and fake records from the reference were not copied.
+- Home uses a brighter identity treatment and airy permission-derived shortcut
+  cards. Social keeps real backend posts and permissions while moving to rounded,
+  image-led post surfaces and simpler creation chrome. The role-aware college
+  context and shared surfaces were updated through semantic tokens, preserving
+  auth, routing, affiliation, attendance, and server-authority behavior.
+- Formatting, zero-issue static analysis, `git diff --check`, the release web
+  build, and the debug APK build pass locally. The selected Flutter widget suite
+  is presently blocked before execution because Windows Application Control
+  denies the downloaded `flutter_tester.exe`; a Chrome-platform fallback also
+  timed out without results and is not counted as a pass.
+- `CampusConnect-campus-sky-debug.apk` is 197,521,886 bytes with SHA-256
+  `BA6AE72E2AE1271EDAD477F58A1E47BA850E75E1119B60DCAF1A9E189517DB4A`.
+  It verifies with APK Signature Scheme v2 and one Android debug signer. No
+  physical-device installation is claimed because ADB currently lists no device.
+
 ## Validation evidence
 
 The table separates the current local Purple Universe foundation source gate

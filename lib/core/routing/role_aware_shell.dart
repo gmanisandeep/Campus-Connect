@@ -3,6 +3,7 @@ import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/configuration/providers.dart';
 import 'package:campus_connect/core/networking/connectivity_service.dart';
 import 'package:campus_connect/core/theme/app_tokens.dart';
+import 'package:campus_connect/core/theme/purple_universe/cc_radius.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_ambient_background.dart';
@@ -183,41 +184,49 @@ class _CampusContextBar extends StatelessWidget {
       label: 'Active campus $institution, role $role',
       child: ExcludeSemantics(
         child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: context.ccTheme.glassSurface,
-            border: Border(
-              bottom: BorderSide(color: context.ccTheme.borderSubtle),
-            ),
-          ),
+          decoration: const BoxDecoration(color: Colors.transparent),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CcSpacing.md,
-              vertical: CcSpacing.sm,
+            padding: const EdgeInsets.fromLTRB(
+              CcSpacing.md,
+              CcSpacing.sm,
+              CcSpacing.md,
+              CcSpacing.xs,
             ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.apartment_rounded,
-                  size: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: CcSpacing.xs),
-                Expanded(
-                  child: Text(
-                    institution,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                const SizedBox(width: CcSpacing.sm),
-                Text(
-                  role,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CcSpacing.md,
+                vertical: CcSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: context.ccTheme.raisedSurface,
+                borderRadius: BorderRadius.circular(CcRadius.capsule),
+                boxShadow: context.ccTheme.cardShadow,
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.apartment_rounded,
+                    size: 20,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                ),
-              ],
+                  const SizedBox(width: CcSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      institution,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  const SizedBox(width: CcSpacing.sm),
+                  Text(
+                    role,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

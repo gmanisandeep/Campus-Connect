@@ -5,25 +5,25 @@ abstract final class CcGradients {
   static const purpleCore = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF5B21B6), CcColors.ultraViolet, Color(0xFFA855F7)],
+    colors: [Color(0xFF2876B8), CcColors.skyBlue, Color(0xFF73CEF4)],
   );
 
   static const electricHorizon = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
-    colors: [Color(0xFF243CFF), Color(0xFF6D28D9), CcColors.nebulaPink],
+    colors: [Color(0xFF165D9B), Color(0xFF3E9BD6), Color(0xFF7DDBF4)],
   );
 
   static const cyanViolet = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF22D3EE), Color(0xFF3B82F6), CcColors.electricPurple],
+    colors: [Color(0xFFBDEBFF), Color(0xFF69C5F2), CcColors.skyBlue],
   );
 
   static const deepSpace = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFF171020), CcColors.spaceBlack, CcColors.spaceBlack],
+    colors: [Color(0xFF153B55), CcColors.spaceBlack, CcColors.spaceBlack],
     stops: [0, 0.34, 1],
   );
 
@@ -31,17 +31,24 @@ abstract final class CcGradients {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color(0xFF090512),
-      Color(0xFF22104F),
-      Color(0xFF4C1D95),
-      Color(0xFF1310A1),
+      Color(0xFF0A263A),
+      Color(0xFF174B6B),
+      Color(0xFF2F88BD),
+      Color(0xFF76D0F2),
     ],
   );
 
   static const pearlHorizon = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFFF3EFFA), CcColors.pearlCanvas, CcColors.pearlCanvas],
-    stops: [0, 0.34, 1],
+    colors: [Color(0xFFBFEAFF), CcColors.pearlCanvas, Color(0xFFF8FCFF)],
+    stops: [0, 0.46, 1],
+  );
+
+  static const orbitBlue = RadialGradient(
+    center: Alignment(-0.35, -0.45),
+    radius: 0.95,
+    colors: [Color(0xFFD8F6FF), Color(0xFF53B9EE), Color(0xFF0B5E9D)],
+    stops: [0, 0.48, 1],
   );
 }

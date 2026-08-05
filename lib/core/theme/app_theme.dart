@@ -38,10 +38,9 @@ abstract final class AppTheme {
         elevation: 0,
         color: ccTheme.surface,
         surfaceTintColor: Colors.transparent,
-        shadowColor: Colors.transparent,
+        shadowColor: scheme.shadow,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(CcRadius.card),
-          side: BorderSide(color: ccTheme.borderSubtle),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -74,6 +73,8 @@ abstract final class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          backgroundColor: isDark ? CcColors.starWhite : CcColors.inkBlack,
+          foregroundColor: isDark ? CcColors.inkBlack : Colors.white,
           minimumSize: const Size(64, 48),
           padding: const EdgeInsets.symmetric(
             horizontal: CcSpacing.lg,
@@ -106,15 +107,38 @@ abstract final class AppTheme {
         style: IconButton.styleFrom(minimumSize: const Size.square(44)),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: scheme.surfaceContainerHigh,
-        selectedColor: scheme.primaryContainer,
-        side: BorderSide(color: ccTheme.borderSubtle),
+        backgroundColor: ccTheme.raisedSurface,
+        selectedColor: isDark ? CcColors.starWhite : CcColors.inkBlack,
+        side: BorderSide.none,
         shape: const StadiumBorder(),
-        labelStyle: textTheme.labelMedium,
+        labelStyle: textTheme.labelMedium?.copyWith(color: scheme.onSurface),
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
+          color: isDark ? CcColors.inkBlack : Colors.white,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: CcSpacing.xs),
       ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: const WidgetStatePropertyAll(Size(72, 42)),
+          padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: CcSpacing.md),
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? (isDark ? CcColors.starWhite : CcColors.inkBlack)
+                : ccTheme.raisedSurface,
+          ),
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? (isDark ? CcColors.inkBlack : Colors.white)
+                : scheme.onSurface,
+          ),
+          side: const WidgetStatePropertyAll(BorderSide.none),
+          shape: const WidgetStatePropertyAll(StadiumBorder()),
+        ),
+      ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 68,
+        height: 74,
         elevation: 0,
         backgroundColor: ccTheme.surface,
         indicatorColor: Colors.transparent,
@@ -196,7 +220,7 @@ abstract final class AppTheme {
         seedColor: AppColors.darkSeed,
         brightness: Brightness.dark,
       ).copyWith(
-        primary: CcColors.electricPurple,
+        primary: CcColors.skyBright,
         onPrimary: CcColors.voidDark,
         primaryContainer: const Color(0xFF2B1857),
         onPrimaryContainer: CcColors.softLavender,
@@ -204,7 +228,7 @@ abstract final class AppTheme {
         primaryFixedDim: CcColors.softLavender,
         onPrimaryFixed: CcColors.voidDark,
         onPrimaryFixedVariant: CcColors.midnightPurple,
-        secondary: CcColors.neonCyan,
+        secondary: CcColors.skyBlue,
         onSecondary: CcColors.voidDark,
         secondaryContainer: CcColors.infoContainer,
         onSecondaryContainer: CcColors.info,
@@ -241,7 +265,7 @@ abstract final class AppTheme {
         inverseSurface: CcColors.starWhite,
         onInverseSurface: CcColors.deepNight,
         inversePrimary: CcColors.lightPrimary,
-        surfaceTint: CcColors.electricPurple,
+        surfaceTint: CcColors.skyBright,
       );
 
   static ColorScheme _lightScheme() =>
@@ -249,8 +273,8 @@ abstract final class AppTheme {
         seedColor: AppColors.lightSeed,
         brightness: Brightness.light,
       ).copyWith(
-        primary: CcColors.lightPrimary,
-        onPrimary: Colors.white,
+        primary: CcColors.skyBlue,
+        onPrimary: CcColors.inkBlack,
         primaryContainer: CcColors.paleViolet,
         onPrimaryContainer: CcColors.inkIndigo,
         primaryFixed: CcColors.paleViolet,
@@ -289,11 +313,11 @@ abstract final class AppTheme {
         onSurfaceVariant: CcColors.secondaryInk,
         outline: CcColors.mutedInk,
         outlineVariant: CcElevation.subtleLightBorder,
-        shadow: const Color(0xFF312458),
-        scrim: const Color(0xFF17102F),
+        shadow: const Color(0xFF285F80),
+        scrim: const Color(0xFF06131C),
         inverseSurface: CcColors.inkIndigo,
         onInverseSurface: CcColors.cloudSurface,
         inversePrimary: CcColors.softLavender,
-        surfaceTint: CcColors.lightPrimary,
+        surfaceTint: CcColors.skyBlue,
       );
 }

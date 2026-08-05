@@ -52,10 +52,18 @@ class CcBrandLockup extends StatelessWidget {
 }
 
 class CcIconTile extends StatelessWidget {
-  const CcIconTile({required this.icon, this.semanticLabel, super.key});
+  const CcIconTile({
+    required this.icon,
+    this.semanticLabel,
+    this.backgroundColor,
+    this.foregroundColor,
+    super.key,
+  });
 
   final IconData icon;
   final String? semanticLabel;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -63,13 +71,14 @@ class CcIconTile extends StatelessWidget {
     height: 48,
     alignment: Alignment.center,
     decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: backgroundColor ?? Theme.of(context).colorScheme.primaryContainer,
       borderRadius: BorderRadius.circular(CcRadius.control),
     ),
     child: Icon(
       icon,
       semanticLabel: semanticLabel,
-      color: Theme.of(context).colorScheme.onPrimaryContainer,
+      color:
+          foregroundColor ?? Theme.of(context).colorScheme.onPrimaryContainer,
     ),
   );
 }
