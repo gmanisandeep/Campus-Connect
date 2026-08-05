@@ -15,6 +15,12 @@ enum RestoredIdentitySession {
   unclassified,
 }
 
+class AccountCreationResult {
+  const AccountCreationResult({required this.confirmationRequired});
+
+  final bool confirmationRequired;
+}
+
 class IdentityAuthEvent {
   const IdentityAuthEvent({required this.type, this.userId});
 
@@ -27,6 +33,10 @@ abstract interface class IdentityRepository {
   String? get currentUserId;
 
   Future<RestoredIdentitySession> restoreSession();
+  Future<AccountCreationResult> signUp({
+    required String email,
+    required String password,
+  });
   Future<void> signIn({required String email, required String password});
   Future<void> requestPasswordReset(String email);
   Future<void> updatePassword(String password);

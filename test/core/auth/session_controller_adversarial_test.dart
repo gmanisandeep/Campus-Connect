@@ -324,6 +324,12 @@ class _AdversarialIdentityRepository implements IdentityRepository {
   }) async {}
 
   @override
+  Future<AccountCreationResult> signUp({
+    required String email,
+    required String password,
+  }) async => const AccountCreationResult(confirmationRequired: true);
+
+  @override
   Future<void> signOut() async {
     await _signOutBarrier;
   }

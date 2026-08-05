@@ -1,0 +1,10 @@
+{
+  "name": "CampusConnect",
+  "short_name": "CampusConnect",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#17102f",
+  "theme_color": "#6f4df6",
+  "description": "Campus social network and verified College Console",
+  "orientation": "any"
+}

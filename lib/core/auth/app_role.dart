@@ -6,7 +6,8 @@ enum AppRole {
   mentor('Mentor'),
   placementOfficer('Placement officer'),
   clubCoordinator('Club coordinator'),
-  student('Student');
+  student('Student'),
+  alumni('Alumni');
 
   const AppRole(this.label);
   final String label;
@@ -22,6 +23,7 @@ enum AppRole {
     AppRole.placementOfficer => 'placement_officer',
     AppRole.clubCoordinator => 'club_coordinator',
     AppRole.student => 'student',
+    AppRole.alumni => 'alumni',
   };
 
   static AppRole? fromDatabaseKey(String key) => switch (key) {
@@ -33,6 +35,7 @@ enum AppRole {
     'placement_officer' => AppRole.placementOfficer,
     'club_coordinator' => AppRole.clubCoordinator,
     'student' => AppRole.student,
+    'alumni' => AppRole.alumni,
     _ => null,
   };
 }

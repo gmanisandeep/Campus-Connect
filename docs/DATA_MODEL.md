@@ -11,11 +11,37 @@ Every institution-owned root record contains `institution_id`; children either r
 | Tenant/identity | institutions, institution_settings, campuses, profiles, institution_memberships, roles, permissions, membership_roles, role_permissions |
 | Academic | departments, programmes, academic_periods, sections, subjects, course_offerings, faculty_assignments, student_enrolments, timetable_entries |
 | Attendance | attendance_sessions, attendance_records; attendance_adjustments is reserved for the audited-corrections slice |
-| Communication | announcements, announcement_audiences, announcement_reads, notifications, notification_preferences, device_tokens |
+| Communication | announcements, announcement_audiences, announcement_reads, announcement_saves, conversations, conversation_members, messages, conversation_read_state, notifications, notification_preferences, device_tokens |
 | Campus | events, event_registrations, event_attendance, clubs, club_memberships, club_activities |
 | Mentorship | mentor_assignments, mentorship_sessions, mentorship_action_items |
-| Career | career_opportunities, eligibility_rules, opportunity_applications, saved_items |
-| Platform | files, feature_flags, audit_logs, sync_operations |
+| Career | skills, student_skills, career_opportunities, opportunity_eligibility_rules, opportunity_applications, saved_opportunities |
+| Platform | files, feature_flags, audit_logs, domain_event_outbox, sync_operations |
+
+Communication, Campus, Mentorship, Career, and the additional Platform entities
+in this table are planned unless an implemented migration is named below. A
+reserved entity name is not evidence of a table, grant, RLS policy, RPC, or
+working Flutter feature.
+
+## Planned whiteboard feature contracts
+
+- **Feed** starts with announcements and typed audience rows. Reads and saves
+  are per-user state; publication and expiry remain server-enforced.
+- **Course Chat** binds conversations to a tenant-scoped course offering.
+  Current enrolment or Faculty assignment is rechecked dynamically rather than
+  trusting a stale member row. Message retry uses a client UUID, and unread
+  state uses a monotonic per-conversation cursor.
+- **Calendar** is initially an authorized projection of timetable entries over
+  a bounded date range. Later events and Opportunity deadlines remain typed
+  source records instead of copied calendar truth.
+- **Skills** separates a curated institution skill from a Student's assertion.
+  Self-declared and institution-verified provenance are distinct fields and
+  permissions.
+- **Internships, Jobs, and Part-time** are values of one Opportunity type, not
+  separate table families. Saves are low-risk user state; eligibility and
+  application transitions require current server confirmation.
+- **Dashboard/Home** is a role-aware projection and has no standalone business
+  table. It returns compact previews and counts from authorized source
+  features.
 
 ## Device-local attendance draft model
 
@@ -47,6 +73,22 @@ class/session/marks response from the attendance RPC.
 - Event registration capacity and deadline are enforced atomically server-side.
 - Private mentor notes and student-visible summaries are separate columns with separate access paths.
 - Expired/archived content is filtered server-side; it is not merely hidden by the client.
+- Chat access ends immediately when the underlying enrolment or assignment is
+  no longer authorized; Realtime subscription state never outlives RLS.
+- A self-declared skill never silently satisfies a verified-skill eligibility
+  rule.
+- Opportunity type, publication state, deadline, audience, and eligibility are
+  rechecked under the same server-confirmed application transaction.
+- One social profile belongs to one Auth user; usernames are unique and are not
+  authorization identities.
+- Social post visibility is enforced by server projection. College posts bind
+  to the college resolved from active membership or pending affiliation.
+- A social thread is created only by accepting a message request and contains
+  exactly the accepted participants. Blocks override follows, requests, post
+  visibility, and messaging.
+- Institution directory publication is distinct from platform registration:
+  an institution may be prelisted and unclaimed, claim-pending, or verified.
+  Only verified institutions can accept Faculty authority applications.
 
 ## Index strategy
 

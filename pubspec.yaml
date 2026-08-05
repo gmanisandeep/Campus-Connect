@@ -21,6 +21,9 @@ dependencies:
   crypto: ^3.0.7
   path: ^1.9.1
   path_provider: ^2.1.6
+  file_selector: ^1.1.0
+  share_plus: ^10.1.4
+  video_player: ^2.11.1
 
 dev_dependencies:
   flutter_test:

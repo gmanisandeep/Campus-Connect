@@ -220,6 +220,51 @@ void main() {
     },
   );
 
+  test('sign-up reports when email confirmation is required', () async {
+    const email = 'new-user@example.invalid';
+    const password = 'SecurePassword!';
+    final user = _session('new-user', email: email).user;
+    when(
+      () => auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: 'campusconnect://auth-callback',
+      ),
+    ).thenAnswer((_) async => AuthResponse(user: user));
+    final repository = SupabaseIdentityRepository(gateway, sessionGate);
+
+    final result = await repository.signUp(
+      email: '  NEW-USER@example.invalid ',
+      password: password,
+    );
+
+    expect(result.confirmationRequired, isTrue);
+    expect(sessionGate.classificationCalls, 0);
+  });
+
+  test('sign-up classifies an immediately authenticated session', () async {
+    const email = 'instant-user@example.invalid';
+    const password = 'SecurePassword!';
+    final session = _session('instant-user', email: email);
+    when(
+      () => auth.signUp(
+        email: email,
+        password: password,
+        emailRedirectTo: 'campusconnect://auth-callback',
+      ),
+    ).thenAnswer(
+      (_) async => AuthResponse(session: session, user: session.user),
+    );
+    final repository = SupabaseIdentityRepository(gateway, sessionGate);
+
+    final result = await repository.signUp(email: email, password: password);
+
+    expect(result.confirmationRequired, isFalse);
+    expect(sessionGate.classifications, [
+      AuthSessionClassification.authenticated,
+    ]);
+  });
+
   test(
     'retryable refresh failure is propagated without clearing the session',
     () async {

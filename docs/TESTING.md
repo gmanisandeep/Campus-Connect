@@ -38,10 +38,14 @@ Fixtures and development seed data must be explicit, fictional, and deterministi
 
 - The consolidated `dart format` and `flutter analyze` gates pass on Flutter
   3.44.6/Dart 3.12.2 with zero analyzer issues.
-- The full Flutter gate passes all 141 unit/widget tests. Raw LCOV records 2,286
-  of 3,886 lines hit (58.83%). Excluding generated Drift `.g.dart` code, it
-  records 1,983 of 2,869 lines hit (69.12%). These are checkpoint measurements,
+- The full Flutter gate passes all 149 unit/widget tests. Raw LCOV records 2,408
+  of 4,074 lines hit (59.11%). Excluding generated Drift `.g.dart` code, it
+  records 2,105 of 3,057 lines hit (68.86%). These are checkpoint measurements,
   not a release-quality target.
+- Eight focused Purple Universe foundation tests cover palette and gradients,
+  compatibility tokens, centralized motion and spring ratios, dark/light theme
+  installation, critical text and non-text contrast, semantic status roles,
+  typed `BuildContext` access, and shared badge color mapping.
 - The encrypted-draft increment includes 19 focused real-store/key-destruction
   cases, 35 controller/state-machine/lifecycle-race cases, 12 Academics page
   widget cases, and exact-confirmation repository coverage. It covers
@@ -68,7 +72,21 @@ Fixtures and development seed data must be explicit, fictional, and deterministi
   blocks the cached Supabase CLI executable, so the unchanged schema's CLI lint
   and 228-assertion verifier retain their most recent passing evidence rather
   than being claimed as fresh reruns.
-- CI now contains the Flutter source/coverage/release-APK gates, a heuristic secret scan, and a Docker-backed Supabase reset, schema-lint, pgTAP, and local-backend verification job. No hosted workflow run is claimed.
+- Hosted GitHub Actions run `30008925152` passed on baseline commit
+  `bc7cc51e6772f6a41ab40858e3742057c5218709`. Its Flutter job passed
+  dependency resolution, format, analysis, all tests with coverage, release
+  APK compilation, and the heuristic secret scan. Its database job passed
+  Supabase start/reset, all 276 pgTAP assertions, schema lint, the
+  228-assertion real-backend verifier, and cleanup.
+- The Purple Universe P1 validation recorded here is local. Hosted validation
+  is a separate gate and must not be inferred from the green baseline run.
+  Preserved APK, emulator, and physical-device results predate the theme
+  foundation and do not validate its visuals.
+- The P1 source builds as `build/app/outputs/flutter-apk/app-debug.apk`
+  (198,317,469 bytes, SHA-256
+  `A9E4B950E9637B7D7364165CC2D095BFAAFCF0EFE273F4F85C91A857CCFC76FC`).
+  It verifies with APK Signature Scheme v2 and one Android debug signer. This
+  is an unconfigured compile artifact, not a release or device-visual result.
 - Local release-mode AOT compilation passes with `--no-tree-shake-icons`; Windows Application Control blocks Flutter's `font-subset.exe` in the default tree-shaken command. Linux CI retains the standard command. This is not release-readiness evidence because production signing and Dart defines are still absent.
 
 Docker Desktop 4.82.0, Docker CLI 29.6.1, WSL 2, and the Linux container engine are operational. Optional Supabase analytics is intentionally disabled; core services and localhost Auth health remain available. A host-scoped Windows Firewall rule blocks inbound TCP ports 54321-54329, but that machine-level protection is not enforced by the repository.

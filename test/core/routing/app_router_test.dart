@@ -32,6 +32,13 @@ void main() {
     role: AppRole.clubCoordinator,
     permissions: {AppPermission.clubsManage},
   );
+  const institutionAdministratorGrant = AccessGrant(
+    membershipId: 'admin-membership',
+    institutionId: 'institution',
+    institutionName: 'Campus',
+    role: AppRole.institutionAdministrator,
+    permissions: {AppPermission.institutionManage},
+  );
 
   test('unknown and signed-out sessions cannot render protected routes', () {
     expect(
@@ -61,6 +68,15 @@ void main() {
       ),
       isNull,
     );
+    expect(
+      routeRedirect(
+        session: const AppSession.signedOut(),
+        location: '/sign-up',
+        galleryEnabled: false,
+        academicsEnabled: true,
+      ),
+      isNull,
+    );
   });
 
   test('identity flow statuses are routed deterministically', () {
@@ -84,6 +100,41 @@ void main() {
     );
   });
 
+  test(
+    'blocked accounts can reach registration and platform review routes',
+    () {
+      const blocked = AppSession.accessBlocked(
+        reason: AccessBlockReason.noMembership,
+        identity: identity,
+      );
+
+      for (final location in const [
+        '/college-registration',
+        '/faculty-registration',
+        '/platform-admin',
+      ]) {
+        expect(
+          routeRedirect(
+            session: blocked,
+            location: location,
+            galleryEnabled: false,
+            academicsEnabled: true,
+          ),
+          isNull,
+        );
+      }
+      expect(
+        routeRedirect(
+          session: blocked,
+          location: '/home',
+          galleryEnabled: false,
+          academicsEnabled: true,
+        ),
+        '/access-unavailable',
+      );
+    },
+  );
+
   test('authenticated sessions leave identity routes for the app shell', () {
     const authenticated = AppSession.authenticated(
       identity: identity,
@@ -94,6 +145,15 @@ void main() {
       routeRedirect(
         session: authenticated,
         location: '/onboarding',
+        galleryEnabled: false,
+        academicsEnabled: true,
+      ),
+      '/home',
+    );
+    expect(
+      routeRedirect(
+        session: authenticated,
+        location: '/sign-up',
         galleryEnabled: false,
         academicsEnabled: true,
       ),
@@ -168,6 +228,81 @@ void main() {
           location: '/academics/offering-1',
           galleryEnabled: false,
           academicsEnabled: false,
+        ),
+        '/home',
+      );
+    },
+  );
+
+  test('affiliation review requires institution management permission', () {
+    const student = AppSession.authenticated(
+      identity: identity,
+      activeGrant: studentGrant,
+    );
+    const administrator = AppSession.authenticated(
+      identity: identity,
+      activeGrant: institutionAdministratorGrant,
+    );
+
+    expect(
+      routeRedirect(
+        session: student,
+        location: '/affiliation-review',
+        galleryEnabled: false,
+        academicsEnabled: true,
+      ),
+      '/home',
+    );
+    expect(
+      routeRedirect(
+        session: administrator,
+        location: '/affiliation-review',
+        galleryEnabled: false,
+        academicsEnabled: true,
+      ),
+      isNull,
+    );
+  });
+
+  test(
+    'Community requires backend configuration but not academic permission',
+    () {
+      const student = AppSession.authenticated(
+        identity: identity,
+        activeGrant: studentGrant,
+      );
+      const unsupported = AppSession.authenticated(
+        identity: identity,
+        activeGrant: unsupportedGrant,
+      );
+
+      expect(
+        routeRedirect(
+          session: student,
+          location: '/community',
+          galleryEnabled: false,
+          academicsEnabled: true,
+          communityEnabled: true,
+        ),
+        isNull,
+      );
+      expect(
+        routeRedirect(
+          session: unsupported,
+          location: '/community',
+          galleryEnabled: false,
+          academicsEnabled: true,
+          communityEnabled: true,
+        ),
+        isNull,
+      );
+      expect(
+        routeRedirect(
+          session: student,
+          location: '/community',
+          galleryEnabled: false,
+          academicsEnabled: true,
+          communityEnabled: false,
         ),
         '/home',
       );

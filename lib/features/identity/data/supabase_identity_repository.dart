@@ -145,6 +145,37 @@ class SupabaseIdentityRepository implements IdentityRepository {
       );
 
   @override
+  Future<AccountCreationResult> signUp({
+    required String email,
+    required String password,
+  }) => _run(
+    () async {
+      final response = await _client.auth.signUp(
+        email: email.trim().toLowerCase(),
+        password: password,
+        emailRedirectTo: _authCallback,
+      );
+      if (response.user == null) {
+        throw const AppFailure(
+          kind: FailureKind.authentication,
+          message: 'Unable to create your account right now.',
+        );
+      }
+      final session = response.session;
+      if (session == null) {
+        return const AccountCreationResult(confirmationRequired: true);
+      }
+      await _sessionGate.classify(
+        session,
+        AuthSessionClassification.authenticated,
+      );
+      return const AccountCreationResult(confirmationRequired: false);
+    },
+    message: 'Unable to create your account right now.',
+    authFailure: true,
+  );
+
+  @override
   Future<void> requestPasswordReset(String email) => _run(
     () => _client.auth.resetPasswordForEmail(
       email.trim().toLowerCase(),

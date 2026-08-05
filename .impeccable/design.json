@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-05T00:00:00+05:30",
+  "title": "Design System: CampusConnect",
+  "extensions": {
+    "colorMeta": {
+      "sky-blue": { "role": "primary", "displayName": "Campus Sky", "canonical": "#498ACA", "tonalRamp": ["#0B263B", "#123E60", "#1E5B88", "#2F76AD", "#498ACA", "#77ADDA", "#B5D6EE", "#E9F7FF"] },
+      "sky-canvas": { "role": "neutral", "displayName": "Sky Canvas", "canonical": "#E9F7FF", "tonalRamp": ["#122B38", "#244657", "#426879", "#688D9D", "#91B4C3", "#B9D7E3", "#DDF0F8", "#F5FCFF"] },
+      "ink-black": { "role": "neutral", "displayName": "Ink Black", "canonical": "#010304", "tonalRamp": ["#010304", "#171C1F", "#31383C", "#50595E", "#737E84", "#9EA8AD", "#CDD3D6", "#F5F7F8"] },
+      "coral": { "role": "secondary", "displayName": "Warm Coral", "canonical": "#E9577B", "tonalRamp": ["#3A0E1C", "#641A31", "#8F2848", "#BC3B61", "#E9577B", "#F287A2", "#F8BDCB", "#FFF0F4"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Rare public and authentication statements." },
+      "headline": { "displayName": "Headline", "purpose": "Screen and major section hierarchy." },
+      "body": { "displayName": "Body", "purpose": "Posts, explanations, and academic records." }
+    },
+    "shadows": [
+      { "name": "ambient-card", "value": "0 8px 20px rgba(40,101,137,0.12)", "purpose": "Light-theme raised cards and navigation tray." },
+      { "name": "creation-orbit", "value": "0 7px 18px rgba(30,120,180,0.30)", "purpose": "Five-destination mobile creation action only." }
+    ],
+    "motion": [
+      { "name": "quick", "value": "140ms cubic-bezier(0.20,0,0,1)", "purpose": "Immediate control feedback." },
+      { "name": "standard", "value": "220ms cubic-bezier(0.20,0,0,1)", "purpose": "Ordinary state transitions." }
+    ],
+    "breakpoints": [
+      { "name": "navigation-rail", "value": "720px" },
+      { "name": "content-cap", "value": "1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Decisive black capsule action.",
+      "html": "<button class=\"ds-btn-primary\">Continue</button>",
+      "css": ".ds-btn-primary{min-height:48px;padding:12px 24px;border:0;border-radius:999px;background:#010304;color:#fff;font:600 14px system-ui;transition:transform 140ms cubic-bezier(.2,0,0,1)}.ds-btn-primary:hover{transform:translateY(-1px)}.ds-btn-primary:focus-visible{outline:3px solid #69C5F2;outline-offset:2px}.ds-btn-primary:active{transform:translateY(0)}"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-default",
+      "description": "Compact white filter capsule with black selected inversion.",
+      "html": "<button class=\"ds-chip\" aria-pressed=\"false\">Following</button>",
+      "css": ".ds-chip{min-height:42px;padding:8px 16px;border:0;border-radius:999px;background:#fff;color:#010304;font:600 12px system-ui}.ds-chip:hover{background:#DDF3FF}.ds-chip:focus-visible{outline:3px solid #498ACA;outline-offset:2px}.ds-chip[aria-pressed=true]{background:#010304;color:#fff}"
+    },
+    {
+      "name": "Sky Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Floating white content surface on the pale sky canvas.",
+      "html": "<article class=\"ds-card\"><strong>Campus update</strong><p>Real content leads inside a calm surface.</p></article>",
+      "css": ".ds-card{padding:24px;border-radius:24px;background:#fff;color:#010304;box-shadow:0 8px 20px rgba(40,101,137,.12);font-family:system-ui}.ds-card strong{font-size:20px}.ds-card p{margin:8px 0 0;color:#344B5A;line-height:1.5}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "description": "Rounded high-contrast campus form control.",
+      "html": "<input class=\"ds-input\" placeholder=\"Official name\" />",
+      "css": ".ds-input{min-height:48px;padding:0 16px;border:1px solid #6B8798;border-radius:16px;background:#fff;color:#010304;font:400 16px system-ui}.ds-input:focus{border-color:#498ACA;outline:3px solid rgba(73,138,202,.25)}"
+    },
+    {
+      "name": "Creation Orbit",
+      "kind": "nav",
+      "description": "Signature raised center action for five-item mobile navigation.",
+      "html": "<button class=\"ds-orbit\" aria-label=\"Create post\"><span>+</span></button>",
+      "css": ".ds-orbit{width:52px;height:52px;padding:0;border:3px solid #fff;border-radius:50%;background:radial-gradient(circle at 34% 28%,#D8F6FF,#53B9EE 50%,#0B5E9D);box-shadow:0 7px 18px rgba(30,120,180,.30)}.ds-orbit span{display:grid;place-items:center;width:28px;height:28px;margin:auto;border:1px solid rgba(255,255,255,.72);border-radius:50%;background:rgba(0,0,0,.72);color:#fff;font:600 20px system-ui}.ds-orbit:focus-visible{outline:3px solid #010304;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Campus Sky",
+    "overview": "Campus Sky is a bright social utility, not an institutional dashboard. A pale blue atmosphere gives white content surfaces air, while decisive black type and controls keep everyday actions fast and legible.",
+    "keyCharacteristics": ["Light-first sky atmosphere with crisp white surfaces.", "Bold near-black hierarchy with one recognizable blue identity.", "Image-led social cards and a raised circular creation action.", "Truthful access, role, institution, and verification states."],
+    "rules": [
+      { "name": "Blue Ownership Rule", "body": "Blue signals CampusConnect identity or active state; it is not applied to every surface.", "section": "colors" },
+      { "name": "Content Voice Rule", "body": "Strong weight establishes hierarchy; gradients, outlines, and all-caps decoration never substitute for hierarchy.", "section": "typography" },
+      { "name": "One-Lift Rule", "body": "A normal surface gets one depth device; reserve the stronger orbit shadow for the central creation action.", "section": "elevation" }
+    ],
+    "dos": ["Do let real people, posts, and campus media supply visual energy.", "Do preserve 44px minimum targets, readable contrast, wrapping, and 200% text access.", "Do show institution, role, access, and verification only from server authority.", "Do keep academic and college-console screens calmer than the social feed."],
+    "donts": ["Don't copy the reference's dating copy, photography, branding, or fake data.", "Don't return to purple wallpaper, scrolling glass, neon body text, or gradients everywhere.", "Don't invent colleges, counts, recommendations, posts, or verification badges.", "Don't let presentation bypass authentication, attendance, repository, or authorization contracts."]
+  }
+}

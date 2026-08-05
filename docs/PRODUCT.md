@@ -34,9 +34,17 @@ Users may hold multiple roles. Active institution and active role are session co
 
 ## Information architecture
 
-Student navigation: Home, Academics, Campus, Career, Profile.
+The canonical hierarchy, exposure gate, and per-feature contracts are defined
+in `FEATURE_ARCHITECTURE.md`.
 
-Faculty navigation: Home, Classes, Students, Campus, Profile.
+- Student navigation: Home, Academics, Community, Career, Profile.
+- Faculty navigation: Home, Teaching, Community, Students, Profile.
+- Feed and course Chat are children of Community.
+- Calendar, Courses, and Attendance are children of Academics or Teaching.
+- Skills plus typed Internships, Jobs, and Part-time Opportunities are children
+  of Student Career.
+- The Notification Center is a global bell action rather than another primary
+  destination.
 
 Administrative web experiences are future Next.js applications sharing backend policy and contracts; they are not part of the mobile MVP.
 

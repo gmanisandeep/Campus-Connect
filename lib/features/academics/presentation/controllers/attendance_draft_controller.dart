@@ -6,7 +6,8 @@ import 'package:campus_connect/core/auth/app_session.dart';
 import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/configuration/providers.dart';
 import 'package:campus_connect/core/errors/app_failure.dart';
-import 'package:campus_connect/features/academics/data/drift_attendance_draft_store.dart';
+import 'package:campus_connect/features/academics/data/drift_attendance_draft_store.dart'
+    if (dart.library.js_interop) 'package:campus_connect/features/academics/data/web_attendance_draft_store.dart';
 import 'package:campus_connect/features/academics/domain/academic_access.dart';
 import 'package:campus_connect/features/academics/domain/academic_dashboard.dart';
 import 'package:campus_connect/features/academics/domain/attendance_draft.dart';
