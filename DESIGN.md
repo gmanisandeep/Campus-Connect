@@ -55,6 +55,10 @@ Reusable primitives live in `lib/core/widgets/purple_universe/`:
   loading states.
 - `CcNavigationBar` and `CcNavigationRail` present the same role-derived
   destinations at phone and expanded widths.
+- `CcSpotlightSurface` and `CcReveal` form the **Campus Pulse** interaction
+  layer: pointer-responsive focus, one-time entrance motion, no idle loop, and
+  an immediate reduced-motion path. Use them for social discovery and identity
+  moments, not routine tables or every card.
 - `CcBrandLockup`, `CcIconTile`, and `CcSectionHeader` establish identity and
   content hierarchy.
 - `CcInlineMessage` presents named info, success, warning, and danger feedback.
@@ -73,6 +77,10 @@ gallery rather than duplicating it across screens.
   role, offline state, and permission-derived destinations remain explicit.
 - **Home:** one restrained greeting hero followed only by authoritative,
   enabled actions. Student and faculty language changes with the active grant.
+- **Social:** the Campus Pulse hero, feed selector, and post surfaces may carry
+  the most expressive interaction treatment. Creation and engagement actions
+  remain real, reversible, clearly labelled, and independent of academic
+  verification state.
 - **Academics and profile:** dense work uses quiet surfaces, exact status
   language, and semantic feedback. Identity can carry a focal raised treatment;
   account and security actions stay sober and unmistakable.

@@ -3,6 +3,7 @@ import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dar
 import 'package:campus_connect/core/widgets/app_search_field.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_ambient_background.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_button.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_pulse.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_scaffold.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_surface.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,59 @@ void main() {
     expect(glassDecoration.gradient, isA<LinearGradient>());
     expect(glassDecoration.boxShadow, theme.cardShadow);
     expect(find.byType(BackdropFilter), findsNothing);
+  });
+
+  testWidgets('spotlight surface is semantic, bounded, and blur free', (
+    tester,
+  ) async {
+    var presses = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        home: Scaffold(
+          body: SizedBox(
+            width: 360,
+            child: CcSpotlightSurface(
+              semanticLabel: 'Open campus pulse',
+              onTap: () => presses += 1,
+              child: const Text('Campus pulse'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics &&
+            widget.properties.label == 'Open campus pulse' &&
+            widget.properties.button == true,
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(BackdropFilter), findsNothing);
+    await tester.tap(find.text('Campus pulse'));
+    await tester.pumpAndSettle();
+    expect(presses, 1);
+    expect(tester.binding.hasScheduledFrame, isFalse);
+  });
+
+  testWidgets('reveal respects the reduced motion preference', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!,
+        ),
+        home: const Scaffold(body: CcReveal(child: Text('Ready now'))),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ready now'), findsOneWidget);
+    expect(tester.binding.hasScheduledFrame, isFalse);
   });
 
   testWidgets('primary button keeps Material disabled and loading behavior', (

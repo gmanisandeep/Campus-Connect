@@ -10,6 +10,7 @@ import 'package:campus_connect/core/widgets/purple_universe/cc_button.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_data_display.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_feedback.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_navigation.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_pulse.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_surface.dart';
 import 'package:campus_connect/features/affiliation/presentation/widgets/student_affiliation_panel.dart';
 import 'package:campus_connect/features/social/data/supabase_social_repository.dart';
@@ -71,7 +72,10 @@ class _SocialHubPageState extends ConsumerState<SocialHubPage> {
   @override
   Widget build(BuildContext context) {
     final body = switch (_section) {
-      0 => _SocialFeedView(provisional: widget.provisional),
+      0 => _SocialFeedView(
+        provisional: widget.provisional,
+        onCreate: () => setState(() => _section = 2),
+      ),
       1 => const _ExploreView(),
       2 => _CreatePostView(
         onPublished: () {
@@ -99,9 +103,10 @@ class _SocialHubPageState extends ConsumerState<SocialHubPage> {
 }
 
 class _SocialFeedView extends ConsumerWidget {
-  const _SocialFeedView({required this.provisional});
+  const _SocialFeedView({required this.provisional, required this.onCreate});
 
   final bool provisional;
+  final VoidCallback onCreate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -113,12 +118,7 @@ class _SocialFeedView extends ConsumerWidget {
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          const SliverToBoxAdapter(
-            child: _PageHeader(
-              title: 'CampusConnect',
-              supportingText: 'People, colleges, and ideas across campus life.',
-            ),
-          ),
+          SliverToBoxAdapter(child: _SocialPulseHeader(onCreate: onCreate)),
           if (provisional)
             const SliverPadding(
               padding: EdgeInsets.fromLTRB(
@@ -144,30 +144,35 @@ class _SocialFeedView extends ConsumerWidget {
                 CcSpacing.md,
                 CcSpacing.md,
               ),
-              child: SegmentedButton<SocialFeedMode>(
-                showSelectedIcon: false,
-                segments: const [
-                  ButtonSegment(
-                    value: SocialFeedMode.forYou,
-                    label: Text('For you'),
-                  ),
-                  ButtonSegment(
-                    value: SocialFeedMode.following,
-                    label: Text('Following'),
-                  ),
-                  ButtonSegment(
-                    value: SocialFeedMode.college,
-                    label: Text('My college'),
-                  ),
-                  ButtonSegment(
-                    value: SocialFeedMode.saved,
-                    label: Text('Saved'),
-                  ),
-                ],
-                selected: {mode},
-                onSelectionChanged: (value) =>
-                    ref.read(socialFeedModeProvider.notifier).state =
-                        value.single,
+              child: CcSurface(
+                variant: CcSurfaceVariant.glass,
+                padding: const EdgeInsets.all(CcSpacing.xxs),
+                borderRadius: BorderRadius.circular(999),
+                child: SegmentedButton<SocialFeedMode>(
+                  showSelectedIcon: false,
+                  segments: const [
+                    ButtonSegment(
+                      value: SocialFeedMode.forYou,
+                      label: Text('For you'),
+                    ),
+                    ButtonSegment(
+                      value: SocialFeedMode.following,
+                      label: Text('Following'),
+                    ),
+                    ButtonSegment(
+                      value: SocialFeedMode.college,
+                      label: Text('My college'),
+                    ),
+                    ButtonSegment(
+                      value: SocialFeedMode.saved,
+                      label: Text('Saved'),
+                    ),
+                  ],
+                  selected: {mode},
+                  onSelectionChanged: (value) =>
+                      ref.read(socialFeedModeProvider.notifier).state =
+                          value.single,
+                ),
               ),
             ),
           ),
@@ -201,13 +206,15 @@ List<Widget> _feedSlivers(
   ],
   data: (posts) => posts.isEmpty
       ? const [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: _SocialEmpty(
-              icon: Icons.auto_awesome_outlined,
-              title: 'Your campus world starts here',
-              message:
-                  'Follow people, publish the first post, or explore colleges. Nothing is hidden behind verification.',
+          SliverPadding(
+            padding: EdgeInsets.only(bottom: CcSpacing.xl),
+            sliver: SliverToBoxAdapter(
+              child: _SocialEmpty(
+                icon: Icons.auto_awesome_outlined,
+                title: 'Your campus world starts here',
+                message:
+                    'Follow people, publish the first post, or explore colleges. Nothing is hidden behind verification.',
+              ),
             ),
           ),
         ]
@@ -237,7 +244,7 @@ class _SocialPostCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    return CcSurface(
+    return CcSpotlightSurface(
       key: ValueKey(post.id),
       padding: EdgeInsets.zero,
       child: Column(
@@ -1229,6 +1236,94 @@ class _SocialProfileView extends ConsumerWidget {
       ],
     );
   }
+}
+
+class _SocialPulseHeader extends StatelessWidget {
+  const _SocialPulseHeader({required this.onCreate});
+
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      CcSpacing.md,
+      CcSpacing.lg,
+      CcSpacing.md,
+      CcSpacing.md,
+    ),
+    child: CcReveal(
+      child: CcSpotlightSurface(
+        prominent: true,
+        semanticLabel: 'Campus Pulse social feed',
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxWidth < 540;
+            final copy = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      color: context.ccTheme.glowCyan,
+                      size: 18,
+                    ),
+                    const SizedBox(width: CcSpacing.xxs),
+                    Text(
+                      'CAMPUS PULSE',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: CcSpacing.sm),
+                Text(
+                  'What campus is talking about.',
+                  style: compact
+                      ? Theme.of(context).textTheme.headlineMedium
+                      : Theme.of(context).textTheme.displaySmall,
+                ),
+                const SizedBox(height: CcSpacing.xs),
+                Text(
+                  'People, colleges, and ideas—one living feed.',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: context.ccTheme.textSecondary,
+                  ),
+                ),
+              ],
+            );
+            final action = CcPrimaryButton(
+              label: 'Post',
+              icon: Icons.add_rounded,
+              expand: compact,
+              onPressed: onCreate,
+            );
+            if (compact) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  copy,
+                  const SizedBox(height: CcSpacing.lg),
+                  action,
+                ],
+              );
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(child: copy),
+                const SizedBox(width: CcSpacing.xl),
+                action,
+              ],
+            );
+          },
+        ),
+      ),
+    ),
+  );
 }
 
 class _PageHeader extends StatelessWidget {

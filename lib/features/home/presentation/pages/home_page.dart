@@ -5,6 +5,7 @@ import 'package:campus_connect/core/theme/purple_universe/cc_spacing.dart';
 import 'package:campus_connect/core/theme/purple_universe/cc_theme_extension.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_data_display.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_feedback.dart';
+import 'package:campus_connect/core/widgets/purple_universe/cc_pulse.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_surface.dart';
 import 'package:campus_connect/core/widgets/status_badge.dart';
 import 'package:campus_connect/features/academics/domain/academic_access.dart';
@@ -38,10 +39,12 @@ class HomePage extends ConsumerWidget {
             CcSpacing.lg,
           ),
           sliver: SliverToBoxAdapter(
-            child: _HomeHero(
-              displayName: session.displayName,
-              role: role,
-              academicsAvailable: academicsAvailable,
+            child: CcReveal(
+              child: _HomeHero(
+                displayName: session.displayName,
+                role: role,
+                academicsAvailable: academicsAvailable,
+              ),
             ),
           ),
         ),
@@ -182,39 +185,49 @@ class _HomeHero extends StatelessWidget {
         ? '$roleLabel home'
         : 'Hello, $name';
 
-    return Semantics(
-      container: true,
-      header: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const StatusBadge(
-            label: 'Identity connected',
-            status: AppStatus.success,
-          ),
-          const SizedBox(height: CcSpacing.lg),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.displayMedium,
+    return CcSpotlightSurface(
+      prominent: true,
+      semanticLabel: '$title. $roleLabel identity connected.',
+      child: Semantics(
+        container: true,
+        header: true,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CcIconTile(
+              icon: switch (role) {
+                AppRole.student => Icons.school_rounded,
+                AppRole.faculty => Icons.co_present_rounded,
+                AppRole.alumni => Icons.workspace_premium_rounded,
+                _ => Icons.hub_rounded,
+              },
+              semanticLabel: '$roleLabel workspace',
             ),
-          ),
-          const SizedBox(height: CcSpacing.sm),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 620),
-            child: Text(
-              academicsAvailable
-                  ? 'The work available here is scoped to your verified '
-                        '$roleLabel access.'
-                  : 'CampusConnect will show only complete, institution-enabled '
-                        'tools for your verified access.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: context.ccTheme.textSecondary,
+            const SizedBox(width: CcSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const StatusBadge(
+                    label: 'Identity connected',
+                    status: AppStatus.success,
+                  ),
+                  const SizedBox(height: CcSpacing.md),
+                  Text(title, style: Theme.of(context).textTheme.displaySmall),
+                  const SizedBox(height: CcSpacing.sm),
+                  Text(
+                    academicsAvailable
+                        ? 'Your verified $roleLabel access is live. Pick up where your campus day left off.'
+                        : 'Your campus identity is live. Institution-enabled tools appear as soon as access is granted.',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: context.ccTheme.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
