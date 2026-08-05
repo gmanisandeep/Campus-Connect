@@ -80,14 +80,14 @@ void main() {
             .where((feature) => feature.id == CampusFeatureId.feed)
             .single
             .delivery,
-        CampusFeatureDelivery.planned,
+        CampusFeatureDelivery.available,
       );
       expect(
         blueprint.features
             .where((feature) => feature.id == CampusFeatureId.chat)
             .single
             .delivery,
-        CampusFeatureDelivery.planned,
+        CampusFeatureDelivery.available,
       );
     }
   });

@@ -1,6 +1,6 @@
 # Implementation status
 
-Updated: 2026-07-23
+Updated: 2026-08-03
 
 ## Reconstruction boundary
 
@@ -51,6 +51,114 @@ Updated: 2026-07-23
   migrations, attendance submission, or encrypted-draft behavior. Ambient
   rendering, glass/spectral components, gallery migration, and production
   screen redesigns are not yet implemented.
+
+### Glass authentication polish
+
+- The shared `CcSurface.glass` treatment now layers the existing semantic
+  violet/cyan light roles over the pre-tinted glass surface, adds a restrained
+  spectral border, and reuses the quiet elevation token. It deliberately adds
+  no `BackdropFilter`, continuous animation, or feature-local color system.
+- `CcAuthScaffold` now presents its bounded authentication panel as the focal
+  glass surface while preserving the existing form, validation, keyboard,
+  autofill, session, and authorization behavior.
+- Flutter formatting, static analysis, all 168 tests, `git diff --check`, the
+  Impeccable detector, a fresh hosted-backend debug APK build, and wireless
+  installation passed. The exact build was visually checked on the Galaxy A35
+  in idle and keyboard-open states; controls remained visible and reachable.
+  Fresh GPU/raster profiling was not run, so measured frame-budget evidence
+  for this increment remains unknown.
+
+### Hosted self-sign-up
+
+- Signed-out users can now open a dedicated Purple Universe account-creation
+  screen from Sign in, enter email/password/confirmation, and receive inline
+  validation plus a generic email-confirmation success state. The hosted
+  Supabase request uses `campusconnect://auth-callback`; projects with email
+  confirmation disabled are also handled through the existing fail-closed
+  session restoration path.
+- Account creation grants no campus authority. A new Auth user without an
+  administrator-assigned active membership and Student/Faculty role remains
+  blocked by the existing server-derived identity/session contract.
+- Formatting, zero-issue static analysis, all 172 tests, `git diff --check`,
+  and the final Impeccable detector passed. A 192,148,208-byte hosted-config
+  debug APK (SHA-256
+  `B5E97115C2B11EB10CD9613FC01264FA853F03E90E656565FA5C92CBD1812460`)
+  built and installed wirelessly on the Galaxy A35. Physical inspection
+  confirmed the public route, field semantics, scrolling, autofill, and
+  keyboard-open reachability; no real account was submitted during QA.
+
+### Student college affiliation verification
+
+- A signed-up Student with no membership can select an active college and a
+  college-configured programme, then submit roll number as the primary college
+  identifier, official name, batch start, expected completion, and progression
+  status. The Student never self-declares a current academic year. Pending,
+  rejected, cancelled, approved, empty, loading, and retry states are explicit;
+  no request grants client-side authority.
+- Institution administrators with the server-derived `institution_manage`
+  permission receive a scoped **Verify** destination. They can review only
+  their institution's pending queue, choose the college-verified current year
+  within programme duration, approve after checking college records, or reject
+  with a required student-visible reason.
+- The additive migrations store programme duration in months and support regular,
+  gap/leave, repeating, lateral-entry, and graduated progression. Active learners
+  receive Student access with a college-verified current year; completed batches
+  receive Alumni access with no current academic year or Student permissions.
+  The decision records reviewer/time evidence and atomically creates the active
+  membership, role, programme enrolment, and first progression-history event. RLS,
+  password-AMR checks, duplicate-pending guards, permanent approved-roll
+  reservation, tenant checks, year bounds, and replay denial passed all 367
+  pgTAP assertions across the seven local database test files. Formatting,
+  zero-issue static analysis, all 186 Flutter tests, `git diff --check`, and the
+  final Impeccable detector also passed.
+- Hosted project `vyhovrxjnnuefdkdsxnf` now has all seven repository migrations
+  registered. The active institution **Bhavan's Vivekananda College**
+  (`bhavans-vivekananda-college`) has an active **B.Sc (MPCs)** programme with a
+  36-month duration. No institution administrator, Student membership, roll
+  number, or approval was fabricated.
+- The graduated/Alumni hosted-config debug APK is 192,199,725 bytes with SHA-256
+  `8EB8F6C92D1E780F2A270641E9C4D68BBFF8EC1B797AE77AADDC8C94FEAA9514`.
+  It verifies with APK Signature Scheme v2, uses package
+  `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), and min
+  SDK 24/target SDK 36. It was wirelessly installed over the existing app on the
+  Galaxy A35 and cold-launched as the resumed activity without a Flutter, Dart,
+  or Android fatal exception.
+- The batch/progression hosted-config debug APK is 192,196,040 bytes with
+  SHA-256
+  `8F641462C5564FFF04F19C98C645C47FC78A971FBA0510C8276A3EA1A2FF195E`.
+  It uses package `com.campusconnect.campus_connect`, version `0.1.0`
+  (`versionCode` 1), min SDK 24/target SDK 36, and was wirelessly installed and
+  launched without a fatal error on the Galaxy A35. It is debug-signed and is
+  not a production release.
+
+### Provisional Community access
+
+- A pending affiliation request now opens a real Community shell instead of
+  blocking the entire app. Feed, Messages, and verification status remain
+  available while Attendance, academic Calendar, Courses, rosters, and other
+  record-backed tools stay inaccessible until college approval.
+- The backend derives the college from the pending request or active membership.
+  Feed reads include only current official posts from that college. Publishing
+  requires `announcements_publish` or `institution_manage`; pending students
+  cannot publish.
+- Pending and verified campus members can contact only active Faculty in their
+  scoped college. Faculty see only threads addressed to them. Messages are
+  plain text, capped at 2,000 characters, idempotent by client request ID, and
+  visible for 180 days; cross-college reads/writes and direct table access are
+  denied.
+- The Community increment passes 30 dedicated pgTAP assertions, bringing the
+  local database gate to 397 assertions across eight files. The complete
+  Flutter suite passes all 194 tests and static analysis reports zero issues.
+- Hosted project `vyhovrxjnnuefdkdsxnf` has all eight repository migrations
+  registered; its Community Feed, Faculty message, and overview contracts
+  verified as present. The hosted-config debug APK is 192,229,557 bytes with
+  SHA-256
+  `0EEB1F5CE5C675ED9F989EE9627846917688EA1F172B7DDEEADD1D89F939DF46`
+  and verifies with APK Signature Scheme v2. The exact artifact was installed
+  wirelessly on the Galaxy A35, launched successfully, and physically verified:
+  pending users can open Feed, Messages, and Access; academic tools remain
+  absent; truthful empty states render when no official post or Faculty exists;
+  and no Flutter or fatal Android exception appeared during the walkthrough.
 
 ### Whiteboard-derived role feature architecture
 
@@ -129,11 +237,12 @@ recovery-page widget coverage.
 | `flutter pub get` | Passed; `pubspec.lock` generated and dependencies resolved. |
 | `dart format --output=none --set-exit-if-changed lib test` | Passed across all 83 Dart files; the verification rerun required zero further changes. |
 | `flutter analyze` | Passed with zero issues. |
+| Current self-sign-up source gate | Passed on 2026-08-03: formatting required no changes, `flutter analyze` reported zero issues, all 172 tests passed, and `git diff --check` plus the Impeccable detector reported no findings. Repository tests cover confirmation-required and immediate-session Supabase responses, signed-out/authenticated routing, public navigation, required-field validation, and the safe confirmation-email state. |
 | `flutter test --coverage` | Passed all 157 tests. Raw LCOV: 2,482/4,148 lines, 59.84%. Excluding generated Drift `.g.dart` code: 2,179/3,131 lines, 69.59%. The eight new catalog/gallery tests include exact hierarchy, evidence-state, unsupported-role, narrow-phone, and 200% text-scale coverage. |
 | `flutter create . --platforms=android,ios ...` | Passed; platform scaffolding generated and auth callback configuration reviewed. |
 | YAML/TOML/XML/plist parse checks | Passed: 3 YAML files, 1 TOML file, and 12 Android/iOS XML/plist files. |
 | PostgreSQL-compatible migration/runtime smoke checks | Passed for all four migrations and the identity, onboarding, academic/timetable, and attendance behavior, including the targeted Unicode White_Space/common-invisible display-name cases. The real Supabase reset and pgTAP gates subsequently passed as well. |
-| pgTAP | Passed in the current local Supabase stack: 4 files, 276 assertions (81 identity/RLS, 46 onboarding/RPC, 93 academic foundation, and 56 attendance capture), including direct OTP/recovery-token denial, mandatory invitation expiry, tenant/resource isolation, exact-roster enforcement, and idempotent attendance replay. During the 2026-07-23 recheck, the four files were run directly through `psql` in the healthy database container because Windows Application Control blocked the cached CLI executable; all 276 reported `ok` and none reported `not ok`. |
+| pgTAP | Passed in the current local Supabase stack: 7 files, 367 assertions (81 identity/RLS, 46 onboarding/RPC, 93 academic foundation, 56 attendance capture, 41 affiliation requests, 29 programme/batch/progression, and 21 graduated/Alumni), including direct OTP/recovery-token denial, mandatory invitation expiry, tenant/resource isolation, exact-roster enforcement, idempotent attendance replay, college-scoped programme selection, college-verified year bounds, progression-history isolation, completed-batch enforcement, and Alumni-without-Student-role access. All 367 reported `ok` and none reported `not ok`. |
 | Supabase CLI | Version 2.109.1 is pinned and was previously confirmed. Windows Application Control currently blocks the cached local executable, so the latest database-contract recheck used the running database container directly. |
 | Docker Desktop / WSL 2 | Passed after the host restart: Docker Desktop 4.82.0 and Docker CLI 29.6.1 are installed, WSL 2 is healthy, and the Linux container engine is running. |
 | `supabase db reset --local` | Most recent full CLI gate passed: all four migrations applied and deterministic identity/academic data loaded in the real local stack. The current containers remain healthy and the database was reset after the prior physical walkthrough; the 2026-07-23 CLI rerun is blocked by host Application Control, not a migration failure. |
@@ -148,6 +257,7 @@ recovery-page widget coverage.
 | Backend-connected local debug APKs | Passed. The current `CampusConnect-local-device-debug.apk` is 192,142,549 bytes with SHA-256 `7FFE10CD9FF7304936252FF97C7CE39022AF0BB3CC34F91EBC9364B039DDEE31`; it verifies with APK Signature Scheme v2 and contains the 2026-07-31 premium role-aware UI. The prior `CampusConnect-local-emulator-debug.apk` is 183,607,142 bytes with SHA-256 `6AEB4F7F013F92CE0606A9B0878CCCDAF342D9295EB016B00AA6FD107DEE01AE`. Both contain local development configuration and are debug-signed test artifacts, not production releases. |
 | Android emulator end-to-end identity flow | Passed with the exact final emulator APK against the real local Supabase stack: sign-in, password-session restore after process force-stop, Mailpit recovery deep-link launch that immediately removes Home authority, fail-closed recovery restoration after process force-stop, password update, sign-out of the recovery session, fresh password authentication accepted by the backend AMR guard, and post-update process restore. The backend was then reset to the original deterministic seed and the installed app was cleared back to sign-in. |
 | Physical Android smoke flow | Passed with the prior academics device APK on a Samsung Galaxy A35 5G (`SM-A356E`), Android 16/API 36, at 1080x2340: secure wireless ADB pairing, APK installation, `tcp:54321` port reversal, cold launch, real seeded Student and Faculty sign-in, Student authenticated-session restoration after process force-stop, Student academics rendering, Faculty roster/status interaction, successful attendance confirmation, and cleanup. The physical recovery-callback and newer encrypted-draft artifact remain separate gates. |
+| Hosted self-sign-up Galaxy A35 gate | Passed for the exact 192,148,208-byte debug APK with SHA-256 `B5E97115C2B11EB10CD9613FC01264FA853F03E90E656565FA5C92CBD1812460`: wireless installation succeeded, the hosted-config app launched signed out, Sign in exposed Create account, and the three-field sign-up form remained scrollable and reachable with the keyboard open. Android autofill was observed; the account-creation request and email callback were deliberately not submitted with personal credentials during automated QA. |
 | Current verified academics/attendance Android slice | Passed on the local Android emulator with the backend-connected `CampusConnect-academics-local-device-debug.apk`: Student sign-in, server-derived campus date, both timetable entries, 66.7%/50.0% summaries, Faculty sign-in, exact two-student roster, status selection, and successful attendance confirmation. The same byte-identical APK passed Student and Faculty end-to-end checks on the Galaxy A35, including successful server-confirmed Faculty submission. The 183,751,296-byte APK uses package `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), min SDK 24/target SDK 36, verifies with APK Signature Scheme v2, and has SHA-256 `7EDF085CD1FD1C6981DE5896DEB454FED1660F1CA1D2F592583F6752DCA0D5AC`. It is the prior local debug artifact, not a release or validation of the newer encrypted-draft increment. |
 | Current encrypted-draft local-device APK | Build/signature gate passed. `build/app/outputs/flutter-apk/CampusConnect-encrypted-offline-drafts-local-device-debug.apk` is 198,317,469 bytes with SHA-256 `348483207CE347B6ABEF10DF3E5DD2E5DEC6EF64F9932E3A7C04DCB89C74517E`. It uses package `com.campusconnect.campus_connect`, version `0.1.0` (`versionCode` 1), min SDK 24/target SDK 36, and verifies with APK Signature Scheme v2 and one Android debug signer. It contains local loopback development configuration and is not a production release. Physical restart/offline/reconnect validation of this exact artifact is pending because ADB currently sees no device. |
 | Purple Universe P1 local-device APK | Build, signature, install, and smoke gates passed for `CampusConnect-purple-universe-local-device-debug.apk` on the Galaxy A35. The backend-connected development app launched without a crash, retained the production-safe signed-out state, and exposed the development-only gallery while demo sessions remained disabled. This is a local debug artifact, not a release. |

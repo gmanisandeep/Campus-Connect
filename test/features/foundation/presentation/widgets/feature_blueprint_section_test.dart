@@ -22,9 +22,9 @@ void main() {
     expect(find.text('Internships'), findsOneWidget);
     expect(find.text('Jobs'), findsOneWidget);
     expect(find.text('Part-time'), findsOneWidget);
-    expect(find.text('Available'), findsNWidgets(2));
+    expect(find.text('Available'), findsNWidgets(6));
     expect(find.text('Foundation'), findsNWidgets(5));
-    expect(find.text('Planned'), findsNWidgets(10));
+    expect(find.text('Planned'), findsNWidgets(6));
     expect(tester.takeException(), isNull);
   });
 

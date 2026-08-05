@@ -74,13 +74,14 @@ abstract final class CampusFeatureCatalog {
           id: CampusFeatureId.feed,
           label: 'Feed',
           summary: 'Official, audience-targeted campus updates.',
-          delivery: CampusFeatureDelivery.planned,
+          delivery: CampusFeatureDelivery.available,
         ),
         CampusFeatureNode(
           id: CampusFeatureId.chat,
-          label: 'Chat',
-          summary: 'Authorized course conversations with explicit membership.',
-          delivery: CampusFeatureDelivery.planned,
+          label: 'Faculty messages',
+          summary:
+              'College-scoped, plain-text conversations with verified Faculty.',
+          delivery: CampusFeatureDelivery.available,
         ),
         CampusFeatureNode(
           id: CampusFeatureId.calendar,
@@ -158,13 +159,14 @@ abstract final class CampusFeatureCatalog {
           id: CampusFeatureId.feed,
           label: 'Feed',
           summary: 'Official updates visible to the active Faculty grant.',
-          delivery: CampusFeatureDelivery.planned,
+          delivery: CampusFeatureDelivery.available,
         ),
         CampusFeatureNode(
           id: CampusFeatureId.chat,
-          label: 'Chat',
-          summary: 'Assigned-course conversations with membership rechecks.',
-          delivery: CampusFeatureDelivery.planned,
+          label: 'Student messages',
+          summary:
+              'College-scoped, plain-text conversations from campus members.',
+          delivery: CampusFeatureDelivery.available,
         ),
         CampusFeatureNode(
           id: CampusFeatureId.calendar,

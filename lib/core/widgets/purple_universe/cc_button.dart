@@ -32,7 +32,7 @@ class CcPrimaryButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: CcSpacing.sm),
-              Text(label),
+              Flexible(child: Text(label, textAlign: TextAlign.center)),
             ],
           )
         : icon == null
@@ -42,7 +42,7 @@ class CcPrimaryButton extends StatelessWidget {
             children: [
               Icon(icon),
               const SizedBox(width: CcSpacing.xs),
-              Text(label),
+              Flexible(child: Text(label, textAlign: TextAlign.center)),
             ],
           );
 

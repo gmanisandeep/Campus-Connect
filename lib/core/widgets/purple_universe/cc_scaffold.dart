@@ -103,7 +103,7 @@ class CcAuthScaffold extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 480),
             child: CcSurface(
               key: panelKey,
-              variant: CcSurfaceVariant.raised,
+              variant: CcSurfaceVariant.glass,
               padding: EdgeInsets.all(
                 constraints.maxWidth < 360 ? CcSpacing.md : CcSpacing.lg,
               ),

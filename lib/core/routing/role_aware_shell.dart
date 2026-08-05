@@ -45,6 +45,20 @@ class RoleAwareShell extends ConsumerWidget {
           Icons.school_outlined,
           Icons.school_rounded,
         ),
+      if (config.hasBackendConfiguration && !config.enableDemoSession)
+        const _Destination(
+          '/community',
+          'Community',
+          Icons.forum_outlined,
+          Icons.forum_rounded,
+        ),
+      if (session.can(AppPermission.institutionManage))
+        const _Destination(
+          '/affiliation-review',
+          'Verify',
+          Icons.how_to_reg_outlined,
+          Icons.how_to_reg_rounded,
+        ),
       const _Destination(
         '/profile',
         'Profile',

@@ -22,6 +22,7 @@ class HomePage extends ConsumerWidget {
     final role = session.activeRole;
     final isStudent = role == AppRole.student;
     final isFaculty = role == AppRole.faculty;
+    final isAlumni = role == AppRole.alumni;
     final academicsAvailable =
         config.hasBackendConfiguration &&
         !config.enableDemoSession &&
@@ -54,13 +55,20 @@ class HomePage extends ConsumerWidget {
           sliver: SliverList.list(
             children: [
               CcSectionHeader(
-                title: isFaculty ? 'Teaching overview' : 'Your campus day',
+                title: isFaculty
+                    ? 'Teaching overview'
+                    : isAlumni
+                    ? 'Your alumni access'
+                    : 'Your campus day',
                 supportingText: academicsAvailable
                     ? isStudent
                           ? 'Open the authoritative timetable and attendance '
                                 'information available to your account.'
                           : 'Open assigned classes, rosters, and attendance '
                                 'tools for your verified faculty access.'
+                    : isAlumni
+                    ? 'Your completed programme is verified. Alumni services '
+                          'will appear only when your college enables them.'
                     : 'Only modules enabled for your verified role appear here.',
               ),
               const SizedBox(height: CcSpacing.md),
@@ -131,6 +139,9 @@ class HomePage extends ConsumerWidget {
                             isFaculty
                                 ? 'Faculty permissions are applied to every '
                                       'available action.'
+                                : isAlumni
+                                ? 'Alumni access confirms your completed '
+                                      'programme without active Student tools.'
                                 : 'Your active membership determines the data '
                                       'and tools you can open.',
                             style: Theme.of(context).textTheme.bodyMedium

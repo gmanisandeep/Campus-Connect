@@ -4,6 +4,12 @@ import 'package:campus_connect/core/auth/app_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Alumni role round-trips without gaining Student permissions', () {
+    expect(AppRole.fromDatabaseKey('alumni'), AppRole.alumni);
+    expect(AppRole.alumni.databaseKey, 'alumni');
+    expect(AppRole.alumni.isStudentExperience, isFalse);
+  });
+
   const studentGrant = AccessGrant(
     membershipId: 'membership',
     institutionId: 'institution',

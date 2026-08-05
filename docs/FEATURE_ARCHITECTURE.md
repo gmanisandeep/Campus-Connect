@@ -19,9 +19,10 @@ large set of peer navigation tabs:
 
 - **Feed** means an official, audience-targeted campus information feed for the
   MVP. It is not an unmoderated social network.
-- **Chat** starts with institution-authorized course channels. Direct messages,
-  attachments, and media are later extensions that require approved retention,
-  moderation, storage, and abuse-handling policies.
+- **Faculty messages** are college-scoped, one-to-one, plain-text conversations
+  between a campus member and an active verified Faculty account. Attachments,
+  group/course channels, media, reactions, and public student discovery remain
+  outside the current boundary.
 - **Calendar** is a presentation of authoritative timetable, event, and
   deadline sources. It does not become a second source of schedule truth.
 - **Courses** and **Attendance** belong to the Student **Academics** area and
@@ -49,14 +50,16 @@ large set of peer navigation tabs:
 | Area | State | Current evidence boundary |
 |---|---|---|
 | Identity, institution/role selection, route authorization, profile, and sign-out | **Available** | Server-derived grants and the existing role-aware shell support the authenticated app. |
+| Student college affiliation request and institution review | **Available** | Students submit a college-configured programme, batch, progression status, and primary roll ID without gaining authority; an institution administrator verifies the current academic year and approves or rejects only their college's queue. |
 | Student Dashboard and Faculty Teaching overview | **Foundation** | A small role-aware Home exists; the richer whiteboard dashboard composition is not yet delivered. |
 | Student today timetable and personal subject attendance summary | **Available** | Backed by the current academic repository and tenant-scoped backend contracts. |
 | Faculty assigned classes, exact roster, attendance capture, and encrypted local drafts | **Available** | This is the existing narrow Attendance vertical; history, risk, corrections, and exports remain outside it. |
 | Purple Universe tokens and theme extension | **Foundation** | Semantic theme foundations exist; the shared ambient, surface, navigation, feedback, and data-display components are the next component slice. |
 | Full Calendar and Course hub | **Foundation** | Today schedule and academic entities exist, but complete day/week/agenda, course list, and course-detail experiences do not. |
 | Standalone Faculty Students area | **Foundation** | Assigned-course rosters exist inside Attendance; an independently complete, permission-safe Students area does not. |
-| Feed and Notification Center | **Planned** | Permission vocabulary and product/data-model boundaries exist, but no production repository, RLS policy, or UI slice is implemented. |
-| Course Chat | **Planned** | No production chat capability is claimed. |
+| Official Feed | **Available** | Pending and verified campus members can read current official posts for their server-derived college; only authorized publishers can create them. |
+| Faculty messages | **Available** | Pending and verified campus members can contact active Faculty in the same college through scoped, idempotent, plain-text conversations with 180-day visibility. |
+| Notification Center and course/group Chat | **Planned** | Notifications, group channels, attachments, reactions, and media remain outside the implemented direct-message slice. |
 | Skills | **Planned** | No production skill-profile capability is claimed. |
 | Typed Opportunities and Career | **Planned** | Placement roles and permission vocabulary exist, but no complete publishing or consumption slice is implemented. |
 
@@ -188,19 +191,20 @@ backend policy enforcement. Read and save states are user-owned and
 idempotent. Likes, public comments, anonymous posting, and algorithmic ranking
 are outside the MVP.
 
-### Course Chat
+### Faculty messages
 
-Chat begins with channels bound to a real course offering or assigned class.
-Students may access only channels for current authorized enrolments; Faculty
-may access only channels for current assignments. Membership revocation
-removes subsequent read and write access.
+A pending affiliation request grants a narrow Community scope for its selected
+college. The requester can discover only active Faculty memberships in that
+college. Verified campus members use the same server-derived institution scope;
+Faculty see only threads addressed to their own account. Losing the pending or
+active campus relationship, or losing the Faculty role, removes subsequent read
+and write access.
 
-Messages use server timestamps, stable ordering, opaque client idempotency
-keys, and explicit `sending`, `sent`, and `failed` presentation. A locally
-composed offline message is a draft, not a sent message. Direct messages,
-attachments, reactions, edit/delete behavior, and push previews remain gated
-until privacy, retention, moderation, storage, and notification policies are
-approved.
+Messages are plain text, limited to 2,000 characters, use server timestamps and
+opaque client idempotency keys, and remain visible for 180 days. Sending is
+explicit and server-confirmed. Attachments, group/course channels, public
+student discovery, reactions, edit/delete behavior, and push previews remain
+gated behind later privacy, moderation, storage, and notification contracts.
 
 ### Calendar
 
@@ -302,7 +306,7 @@ content.
 |---|---|
 | Home | Compose only available cached module summaries and show a global offline state plus each source's last successful sync. |
 | Feed | Read cached authorized items with a stale timestamp; queue low-risk read/save state idempotently. Publishing requires the server. |
-| Chat | Read an authorized local cache and preserve a local composition draft. MVP send requires reconnect and explicit action; offline content is never labeled sent. |
+| Faculty messages | No offline send or false confirmation. Current messages require the server; a failed composition remains in the text field for an explicit retry. |
 | Calendar and Courses | Read the last authorized cache with source and sync time. Calendar data never authorizes a consequential action. |
 | Attendance | Preserve the existing encrypted, scope-bound Faculty draft lifecycle. Reconnect does not submit or confirm automatically. |
 | Skills | Preserve an explicit local edit draft. Verification and server save require current authority. |
@@ -358,6 +362,35 @@ Dense lists, Chat bodies, rosters, forms, warning content, and long reading
 surfaces remain solid or nearly opaque. A viewport normally has at most one
 prominent gradient. Shared visual components do not own repositories,
 permissions, unread counters, or business state.
+
+### Student college affiliation verification
+
+Self-sign-up creates only an Auth identity. A user without a campus membership
+may choose an active institution and one of its configured programmes, then
+submit their roll number as the primary college identifier, official name,
+batch start, expected completion, and progression status. Progression supports
+regular study, an approved gap or leave, repeating an academic year, lateral
+entry, and graduated study without collecting a private reason. The student
+does not claim a current academic year. For a graduated request, completion year
+replaces active-year verification and must not be in the future. The request
+remains visibly pending and grants only provisional Community access: current
+official Feed posts and one-to-one messages with active Faculty in the selected
+college. Attendance, Calendar, Courses, rosters, and all other academic records
+remain unavailable. The student may cancel a pending request or resubmit after a
+rejection; the rejection reason is visible to them.
+
+Only an active membership with `institution_manage` can read that institution's
+pending queue or decide a request. For an active learner, the college must
+choose a verified current academic year within the configured programme
+duration. A completed batch instead receives the Alumni role, a graduated
+enrolment with no current academic year, and no Student permissions. Approval
+atomically completes the profile, creates or reactivates the institution
+membership, assigns the appropriate role, persists the verified programme
+enrolment, and adds a progression-history event. Rejection requires a reason. Reviewer identity and
+decision time are retained as audit evidence. Duplicate pending users are
+rejected, and a case-insensitive roll number remains reserved after approval so
+another account cannot claim it. Password authentication is required for every
+RPC.
 
 ## Security and data contract
 

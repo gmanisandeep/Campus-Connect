@@ -40,6 +40,11 @@ void main() {
                 variant: CcSurfaceVariant.raised,
                 child: Text('Raised'),
               ),
+              CcSurface(
+                key: Key('glass'),
+                variant: CcSurfaceVariant.glass,
+                child: Text('Glass'),
+              ),
             ],
           ),
         ),
@@ -58,11 +63,22 @@ void main() {
         matching: find.byType(DecoratedBox),
       ),
     );
+    final glass = tester.widget<DecoratedBox>(
+      find.descendant(
+        of: find.byKey(const Key('glass')),
+        matching: find.byType(DecoratedBox),
+      ),
+    );
     final theme = AppTheme.light().extension<CcThemeExtension>()!;
 
     expect((base.decoration as BoxDecoration).color, theme.surface);
     expect((raised.decoration as BoxDecoration).color, theme.raisedSurface);
     expect((raised.decoration as BoxDecoration).boxShadow, theme.cardShadow);
+    final glassDecoration = glass.decoration as BoxDecoration;
+    expect(glassDecoration.color, isNull);
+    expect(glassDecoration.gradient, isA<LinearGradient>());
+    expect(glassDecoration.boxShadow, theme.cardShadow);
+    expect(find.byType(BackdropFilter), findsNothing);
   });
 
   testWidgets('primary button keeps Material disabled and loading behavior', (
@@ -154,6 +170,43 @@ void main() {
 
     final scrollable = tester.state<ScrollableState>(find.byType(Scrollable));
     expect(scrollable.position.maxScrollExtent, 0);
+  });
+
+  testWidgets('auth glass composition remains usable in phone landscape', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(852, 393);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        home: const CcAuthScaffold(
+          heroTitle: 'Your campus, in one place.',
+          heroDescription: 'Verified access for campus work.',
+          panelTitle: 'Welcome back',
+          panelDescription: 'Sign in to your campus',
+          child: Column(
+            children: [
+              TextField(decoration: InputDecoration(labelText: 'Email')),
+              SizedBox(height: 16),
+              TextField(decoration: InputDecoration(labelText: 'Password')),
+              SizedBox(height: 16),
+              CcPrimaryButton(label: 'Sign in', onPressed: null),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.ensureVisible(find.text('Sign in'));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsNothing);
   });
 
   testWidgets('uncontrolled search clear removes the visible value', (

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:campus_connect/core/auth/identity_repository.dart';
 import 'package:campus_connect/core/auth/session_controller.dart';
 import 'package:campus_connect/core/configuration/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,30 @@ final identityActionControllerProvider =
     AutoDisposeAsyncNotifierProvider<IdentityActionController, void>(
       IdentityActionController.new,
     );
+
+final signUpControllerProvider =
+    AutoDisposeAsyncNotifierProvider<SignUpController, AccountCreationResult?>(
+      SignUpController.new,
+    );
+
+class SignUpController
+    extends AutoDisposeAsyncNotifier<AccountCreationResult?> {
+  @override
+  FutureOr<AccountCreationResult?> build() => null;
+
+  Future<void> signUp({required String email, required String password}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final result = await ref
+          .read(identityRepositoryProvider)
+          .signUp(email: email, password: password);
+      if (!result.confirmationRequired) {
+        await ref.read(sessionControllerProvider.notifier).restore();
+      }
+      return result;
+    });
+  }
+}
 
 class IdentityActionController extends AutoDisposeAsyncNotifier<void> {
   @override

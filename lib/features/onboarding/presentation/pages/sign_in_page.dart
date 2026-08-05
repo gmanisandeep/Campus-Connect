@@ -120,6 +120,23 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 isLoading: action.isLoading,
                 onPressed: action.isLoading ? null : () => _submit(false),
               ),
+              const SizedBox(height: CcSpacing.xs),
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'New to CampusConnect?',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  TextButton(
+                    onPressed: action.isLoading
+                        ? null
+                        : () => context.go('/sign-up'),
+                    child: const Text('Create account'),
+                  ),
+                ],
+              ),
               const SizedBox(height: CcSpacing.md),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
