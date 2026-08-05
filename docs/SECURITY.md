@@ -55,6 +55,28 @@ The Flutter client is untrusted. It may present an institution or role selection
 - Session/device-token revocation, secure account deletion/export, legal acknowledgement, notification privacy, and incident response exercises.
 - Verified Android App Links/iOS Universal Links for recovery callbacks, production signing, and environment-specific release configuration. The development custom scheme and debug-signed artifacts are not release controls.
 
+## Social and college-onboarding controls
+
+- Social clients receive only server-projected feed, profile, comment, inbox,
+  and thread data. Direct authenticated reads and writes on the underlying
+  social tables are revoked.
+- College visibility is resolved from an active membership or pending Student
+  affiliation. Official publishing requires `announcements_publish` or
+  `institution_manage` for the same institution.
+- A message request is required before a new pair can exchange messages.
+  Either participant may block the other; blocking terminates follows and
+  pending requests and prevents new messaging.
+- Saves are private. Claim documents use a private bucket with user-prefixed
+  upload paths and platform-administrator review access. Public social media
+  uses a separate capped, allowlisted bucket.
+- College and Faculty forms grant no authority by themselves. College claims
+  require platform review; Faculty applications require an already verified
+  college and college-administrator review. Self-approval is not an exposed
+  path.
+- Production still requires upload malware scanning, abuse/rate limits,
+  moderation operations, retention/deletion jobs, legal policies, verified
+  directory-source ingestion, and an append-only administrative audit trail.
+
 ## Authorization order
 
 1. Valid authenticated identity.

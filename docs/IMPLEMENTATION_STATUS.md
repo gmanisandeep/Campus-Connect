@@ -1,6 +1,6 @@
 # Implementation status
 
-Updated: 2026-08-03
+Updated: 2026-08-05
 
 ## Reconstruction boundary
 
@@ -159,6 +159,30 @@ Updated: 2026-08-03
   pending users can open Feed, Messages, and Access; academic tools remain
   absent; truthful empty states render when no official post or Faculty exists;
   and no Flutter or fatal Android exception appeared during the walkthrough.
+
+### Social network and desktop college console
+
+- Community is now a complete Social hub for signed-in users, including public,
+  following, college, and saved feeds; text/image/video/document posts; likes,
+  comments, reposts, saves, native sharing, follows, reporting, blocking, and
+  message requests that become one-to-one threads only after acceptance.
+- Pending students keep Social access and their selected college feed while
+  Attendance, Calendar, Courses, rosters, and other academic records remain
+  locked. Verified college publishers can explicitly mark announcements as
+  official; the backend rechecks the institution permission.
+- The responsive web build now includes desktop-only college claim, Faculty
+  registration, College Console, and platform claim-review experiences.
+  College claims require a private authority document and remain pending until
+  a separate platform administrator approves them. Faculty registration is
+  unavailable until the college itself is verified.
+- The institution directory accepts prelisted, source-attributed records before
+  a college claims its account. A comprehensive Hyderabad directory still
+  requires an authoritative source import and reconciliation; the UI never
+  describes the current seed as complete.
+- Migration `20260805000200_social_network_and_college_console.sql` denies
+  direct authenticated table access and exposes narrow RPC projections. All
+  444 pgTAP assertions, all 197 Flutter tests, static analysis, formatting,
+  `git diff --check`, and the final Impeccable UI detector pass locally.
 
 ### Whiteboard-derived role feature architecture
 

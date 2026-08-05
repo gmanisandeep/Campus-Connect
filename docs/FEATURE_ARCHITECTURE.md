@@ -424,6 +424,13 @@ RPC.
 
 ## Ordered vertical slices
 
+The Social hub and desktop college-registration console now provide the first
+implemented version of cross-college public posting, college-scoped posting,
+media, reactions, saves, follows, moderated message requests, and verified
+official publishers. These implemented contracts supersede the earlier
+course-chat-only assumption below; course channels, push delivery, richer
+moderation, and full Hyderabad directory ingestion remain separate slices.
+
 These are delivery slices within the repository roadmap, not permission to
 expose all target navigation immediately.
 

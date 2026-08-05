@@ -6,6 +6,7 @@ import 'package:campus_connect/core/routing/role_aware_shell.dart';
 import 'package:campus_connect/features/academics/domain/academic_access.dart';
 import 'package:campus_connect/features/academics/presentation/pages/academics_page.dart';
 import 'package:campus_connect/features/affiliation/presentation/pages/affiliation_review_page.dart';
+import 'package:campus_connect/features/college_console/presentation/college_console_pages.dart';
 import 'package:campus_connect/features/community/presentation/pages/community_page.dart';
 import 'package:campus_connect/features/foundation/presentation/pages/design_system_gallery_page.dart';
 import 'package:campus_connect/features/home/presentation/pages/home_page.dart';
@@ -17,6 +18,7 @@ import 'package:campus_connect/features/onboarding/presentation/pages/sign_in_pa
 import 'package:campus_connect/features/onboarding/presentation/pages/sign_up_page.dart';
 import 'package:campus_connect/features/onboarding/presentation/pages/splash_page.dart';
 import 'package:campus_connect/features/profile/presentation/pages/profile_page.dart';
+import 'package:campus_connect/features/social/presentation/pages/social_hub_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,6 +43,11 @@ String? routeRedirect({
     case SessionStatus.selectionRequired:
       return location == '/onboarding' ? null : '/onboarding';
     case SessionStatus.accessBlocked:
+      if (location == '/college-registration' ||
+          location == '/faculty-registration' ||
+          location == '/platform-admin') {
+        return null;
+      }
       return location == '/access-unavailable' ? null : '/access-unavailable';
     case SessionStatus.authenticated:
       const identityRoutes = {
@@ -61,7 +68,15 @@ String? routeRedirect({
           !communityEnabled) {
         return '/home';
       }
+      if ((location == '/social' || location.startsWith('/social/')) &&
+          !communityEnabled) {
+        return '/home';
+      }
       if (location == '/affiliation-review' &&
+          !session.can(AppPermission.institutionManage)) {
+        return '/home';
+      }
+      if (location == '/college-admin' &&
           !session.can(AppPermission.institutionManage)) {
         return '/home';
       }
@@ -110,6 +125,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/access-unavailable',
         builder: (context, state) => const AccessUnavailablePage(),
       ),
+      GoRoute(
+        path: '/social',
+        builder: (context, state) => const SocialHubPage(),
+      ),
+      GoRoute(
+        path: '/college-registration',
+        builder: (context, state) => const CollegeRegistrationPage(),
+      ),
+      GoRoute(
+        path: '/faculty-registration',
+        builder: (context, state) => const FacultyRegistrationPage(),
+      ),
+      GoRoute(
+        path: '/college-admin',
+        builder: (context, state) => const CollegeAdminConsolePage(),
+      ),
+      GoRoute(
+        path: '/platform-admin',
+        builder: (context, state) => const PlatformReviewConsolePage(),
+      ),
       if (config.enableDesignSystemGallery)
         GoRoute(
           path: '/design-system',
@@ -126,6 +161,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/community',
+            redirect: (context, state) => '/social',
             builder: (context, state) => const CommunityPage(),
           ),
           GoRoute(

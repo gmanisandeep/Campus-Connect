@@ -4,7 +4,8 @@ create type public.student_progression_status as enum (
   'regular',
   'on_leave',
   'repeating',
-  'lateral_entry'
+  'lateral_entry',
+  'graduated'
 );
 
 create table public.institution_programmes (

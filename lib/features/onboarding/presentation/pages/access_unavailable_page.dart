@@ -9,8 +9,8 @@ import 'package:campus_connect/core/widgets/purple_universe/cc_scaffold.dart';
 import 'package:campus_connect/features/affiliation/domain/affiliation.dart';
 import 'package:campus_connect/features/affiliation/presentation/controllers/affiliation_controller.dart';
 import 'package:campus_connect/features/affiliation/presentation/widgets/student_affiliation_panel.dart';
-import 'package:campus_connect/features/community/presentation/pages/community_page.dart';
 import 'package:campus_connect/features/identity/presentation/controllers/identity_action_controller.dart';
+import 'package:campus_connect/features/social/presentation/pages/social_hub_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,7 +30,7 @@ class AccessUnavailablePage extends ConsumerWidget {
     final request = affiliation?.valueOrNull?.request;
 
     if (request?.status == AffiliationRequestStatus.pending) {
-      return const CommunityPage(standalone: true);
+      return const SocialHubPage(provisional: true);
     }
 
     return CcAuthScaffold(

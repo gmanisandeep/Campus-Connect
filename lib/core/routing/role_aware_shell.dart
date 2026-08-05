@@ -10,6 +10,7 @@ import 'package:campus_connect/core/widgets/purple_universe/cc_data_display.dart
 import 'package:campus_connect/core/widgets/purple_universe/cc_feedback.dart';
 import 'package:campus_connect/core/widgets/purple_universe/cc_navigation.dart';
 import 'package:campus_connect/features/academics/domain/academic_access.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -47,15 +48,15 @@ class RoleAwareShell extends ConsumerWidget {
         ),
       if (config.hasBackendConfiguration && !config.enableDemoSession)
         const _Destination(
-          '/community',
-          'Community',
+          '/social',
+          'Social',
           Icons.forum_outlined,
           Icons.forum_rounded,
         ),
-      if (session.can(AppPermission.institutionManage))
+      if (kIsWeb && session.can(AppPermission.institutionManage))
         const _Destination(
-          '/affiliation-review',
-          'Verify',
+          '/college-admin',
+          'College Console',
           Icons.how_to_reg_outlined,
           Icons.how_to_reg_rounded,
         ),

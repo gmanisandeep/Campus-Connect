@@ -100,6 +100,41 @@ void main() {
     );
   });
 
+  test(
+    'blocked accounts can reach registration and platform review routes',
+    () {
+      const blocked = AppSession.accessBlocked(
+        reason: AccessBlockReason.noMembership,
+        identity: identity,
+      );
+
+      for (final location in const [
+        '/college-registration',
+        '/faculty-registration',
+        '/platform-admin',
+      ]) {
+        expect(
+          routeRedirect(
+            session: blocked,
+            location: location,
+            galleryEnabled: false,
+            academicsEnabled: true,
+          ),
+          isNull,
+        );
+      }
+      expect(
+        routeRedirect(
+          session: blocked,
+          location: '/home',
+          galleryEnabled: false,
+          academicsEnabled: true,
+        ),
+        '/access-unavailable',
+      );
+    },
+  );
+
   test('authenticated sessions leave identity routes for the app shell', () {
     const authenticated = AppSession.authenticated(
       identity: identity,

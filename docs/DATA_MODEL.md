@@ -79,6 +79,16 @@ class/session/marks response from the attendance RPC.
   rule.
 - Opportunity type, publication state, deadline, audience, and eligibility are
   rechecked under the same server-confirmed application transaction.
+- One social profile belongs to one Auth user; usernames are unique and are not
+  authorization identities.
+- Social post visibility is enforced by server projection. College posts bind
+  to the college resolved from active membership or pending affiliation.
+- A social thread is created only by accepting a message request and contains
+  exactly the accepted participants. Blocks override follows, requests, post
+  visibility, and messaging.
+- Institution directory publication is distinct from platform registration:
+  an institution may be prelisted and unclaimed, claim-pending, or verified.
+  Only verified institutions can accept Faculty authority applications.
 
 ## Index strategy
 
